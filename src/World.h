@@ -5,6 +5,8 @@
 #ifndef FASTCRAFT_WORLD_H
 #define FASTCRAFT_WORLD_H
 
+#include "Chunk.h"
+
 namespace fastcraft {
 
     class World {

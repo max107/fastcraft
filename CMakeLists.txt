@@ -4,7 +4,19 @@ project(fastcraft)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-set(SOURCE_FILES main.cpp)
+set(SOURCE_FILES
+        src/Player.cpp
+        src/Player.h
+        src/Camera.cpp
+        src/Camera.h
+        src/Block.cpp
+        src/Block.h
+        src/Chunk.cpp
+        src/Chunk.h
+        src/World.cpp
+        src/World.h
+        main.cpp
+        )
 add_executable(fastcraft ${SOURCE_FILES})
 
 # Detect and add SFML

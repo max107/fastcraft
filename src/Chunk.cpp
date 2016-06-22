@@ -2,11 +2,11 @@
 // Created by Максим Фалалеев on 22/06/16.
 //
 
-#include "World.h"
+#include "Chunk.h"
 
 namespace fastcraft {
 
-    World::World() {
+    Chunk::Chunk() {
 
     }
 
