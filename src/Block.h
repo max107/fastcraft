@@ -25,8 +25,6 @@ namespace fastcraft {
 
     private:
         GLuint texture = 0;
-
-        GLfloat getBlockGeometry();
     };
 
 }

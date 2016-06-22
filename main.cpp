@@ -1,24 +1,18 @@
-
-////////////////////////////////////////////////////////////
-// Headers
-////////////////////////////////////////////////////////////
-#include <SFML/Graphics.hpp>
+#include <GL/glew.h>
 #include <SFML/OpenGL.hpp>
+
+#include <SFML/Graphics.hpp>
 
 #include "src/Block.h"
 #include "src/Player.h"
 #include "src/Camera.h"
+#include "src/Shader.h"
+
+#include <glm/glm.hpp>
 
 using namespace fastcraft;
 
-////////////////////////////////////////////////////////////
-/// Entry point of application
-///
-/// \return Application exit code
-///
-////////////////////////////////////////////////////////////
-int main()
-{
+int main() {
     // Request a 24-bits depth buffer when creating the window
     sf::ContextSettings contextSettings;
     contextSettings.depthBits = 24;
@@ -26,6 +20,9 @@ int main()
     // Create the main window
     sf::RenderWindow window(sf::VideoMode(800, 600), "SFML graphics with OpenGL", sf::Style::Default, contextSettings);
     window.setVerticalSyncEnabled(true);
+
+    glewExperimental = GL_TRUE;
+    glewInit();
 
     // Create a sprite for the background
     sf::Texture backgroundTexture;
@@ -60,8 +57,18 @@ int main()
     // Configure the viewport (the same size as the window)
     glViewport(0, 0, window.getSize().x, window.getSize().y);
 
+    ///////////////////////////////////////////////////
+
+    // Create and compile our GLSL program from the shaders
+    GLuint programID = LoadShaders("../resources/shader/vertex.vertexshader",
+                                   "../resources/shader/fragment.fragmentshader");
+    // Get a handle for our "MVP" uniform
+    GLuint MatrixID = glGetUniformLocation(programID, "MVP");
+
+    ///////////////////////////////////////////////////
+
     Camera *camera = new Camera();
-    Player* player = new Player(camera);
+    Player *player = new Player(camera, window);
 
     // Setup a perspective projection
     glMatrixMode(GL_PROJECTION);
@@ -75,12 +82,10 @@ int main()
     Block *block = new Block();
 
     // Start game loop
-    while (window.isOpen())
-    {
+    while (window.isOpen()) {
         // Process events
         sf::Event event;
-        while (window.pollEvent(event))
-        {
+        while (window.pollEvent(event)) {
             // Close window: exit
             if (event.type == sf::Event::Closed)
                 window.close();
@@ -96,7 +101,19 @@ int main()
             }
         }
 
-        player->handleUpdate(clock.getElapsedTime());
+        float deltaTime = clock.restart().asSeconds();
+        
+        player->handleUpdate(deltaTime);
+
+        // Compute the MVP matrix from keyboard and mouse input
+        glm::mat4 ProjectionMatrix = player->ProjectionMatrix;
+        glm::mat4 ViewMatrix = player->ViewMatrix;
+        glm::mat4 ModelMatrix = glm::mat4(1.0);
+        glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+
+        // Send our transformation to the currently bound shader,
+        // in the "MVP" uniform
+        glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 
         // Draw the background
         window.pushGLStates();

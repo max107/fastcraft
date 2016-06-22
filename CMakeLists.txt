@@ -5,6 +5,7 @@ project(fastcraft)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 set(SOURCE_FILES
+        src/Shader.h
         src/Player.cpp
         src/Player.h
         src/Camera.cpp
