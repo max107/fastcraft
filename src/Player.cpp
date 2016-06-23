@@ -17,13 +17,9 @@ namespace fastcraft {
     }
 
     void Player::handleUpdate(float deltaTime) {
-        /*
         // Initial position : on +Z
-        glm::vec3 position = glm::vec3( 0, 0, 5 );
-        // Initial horizontal angle : toward -Z
-        float horizontalAngle = 3.14f;
-        // Initial vertical angle : none
-        float verticalAngle = 0.0f;
+        glm::vec3 position = glm::vec3(0, 0, 5);
+
         // Initial Field of View
         float initialFoV = 45.0f;
 
@@ -31,10 +27,14 @@ namespace fastcraft {
         float mouseSpeed = 0.005f;
 
         sf::Vector2i currentMousePosition = sf::Mouse::getPosition(_window);
-        float _horizontal_angle = 0.f;
+        // Initial horizontal angle : toward -Z
+        float _horizontal_angle = 3.14f;
+        // Initial vertical angle : none
         float _vertical_angle = 0.f;
 
-
+        // Compute new orientation
+        _horizontal_angle += (lastMousePosition.x - currentMousePosition.x) / 1000.0f;
+        _vertical_angle -= (lastMousePosition.y - currentMousePosition.y) / 1000.0f;
 
         // Direction : Spherical coordinates to Cartesian coordinates conversion
         glm::highp_vec3 _direction = glm::vec3(std::cos(_vertical_angle) * std::sin(_horizontal_angle),
@@ -49,19 +49,9 @@ namespace fastcraft {
         // Up vector
         glm::highp_vec3 _up = glm::cross(_right, _direction);
 
-        glm::mat4 view;
-        view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f),
-                           glm::vec3(0.0f, 0.0f, 0.0f) + _direction,
-                           _up);
-
         // Get mouse position
-        double xpos, ypos;
         sf::Mouse::setPosition(sf::Vector2i(_window.getSize().x / 2, _window.getSize().y / 2), _window);
         lastMousePosition = sf::Mouse::getPosition(_window);
-
-        // Compute new orientation
-        _horizontal_angle += (lastMousePosition.x - currentMousePosition.x) / 1000.0f;
-        _vertical_angle -= (lastMousePosition.y - currentMousePosition.y) / 1000.0f;
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
             std::cout << "W" << std::endl;
@@ -102,10 +92,9 @@ namespace fastcraft {
         // Camera matrix
         ViewMatrix = glm::lookAt(
                 position,           // Camera is here
-                position+_direction, // and looks here : at the same position, plus "direction"
+                position + _direction, // and looks here : at the same position, plus "direction"
                 _up                  // Head is up (set to 0,-1,0 to look upside-down)
         );
-         */
     }
 
 }

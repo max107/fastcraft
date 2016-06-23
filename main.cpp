@@ -17,12 +17,20 @@ int main() {
     sf::ContextSettings contextSettings;
     contextSettings.depthBits = 24;
 
+//    contextSettings.majorVersion = 3;
+//    contextSettings.minorVersion = 3;
+
     // Create the main window
     sf::RenderWindow window(sf::VideoMode(800, 600), "SFML graphics with OpenGL", sf::Style::Default, contextSettings);
     window.setVerticalSyncEnabled(true);
 
     glewExperimental = GL_TRUE;
-    glewInit();
+    GLenum err = glewInit();
+    if (err != GLEW_OK) {
+        //Problem: glewInit failed, something is seriously wrong.
+        cout << "glewInit failed, aborting." << endl;
+    }
+    cout << glGetString(GL_VERSION) << endl;
 
     // Create a sprite for the background
     sf::Texture backgroundTexture;
@@ -63,7 +71,7 @@ int main() {
     GLuint programID = LoadShaders("../resources/shader/vertex.vertexshader",
                                    "../resources/shader/fragment.fragmentshader");
     // Get a handle for our "MVP" uniform
-    GLuint MatrixID = glGetUniformLocation(programID, "MVP");
+    GLuint MatrixID = glGetUniformLocation(programID, "mvp");
 
     ///////////////////////////////////////////////////
 
@@ -102,18 +110,20 @@ int main() {
         }
 
         float deltaTime = clock.restart().asSeconds();
-        
+
         player->handleUpdate(deltaTime);
 
         // Compute the MVP matrix from keyboard and mouse input
-        glm::mat4 ProjectionMatrix = player->ProjectionMatrix;
-        glm::mat4 ViewMatrix = player->ViewMatrix;
-        glm::mat4 ModelMatrix = glm::mat4(1.0);
-        glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+//        glm::mat4 ModelMatrix = glm::mat4(1.0);
+//        glm::mat4 MVP = player->ProjectionMatrix * player->ViewMatrix * ModelMatrix;
+        // Send our transformation to the currently bound shader, in the "MVP" uniform
+//        glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 
-        // Send our transformation to the currently bound shader,
-        // in the "MVP" uniform
-        glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
+        // check OpenGL error
+//        GLenum err;
+//        while ((err = glGetError()) != GL_NO_ERROR) {
+//            cerr << "OpenGL error: " << err << endl;
+//        }
 
         // Draw the background
         window.pushGLStates();

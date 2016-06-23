@@ -7,13 +7,9 @@
 
 #include <GL/glew.h>
 #include <SFML/OpenGL.hpp>
-
-//#include <stdio.h>
-//#include <string>
 #include <vector>
 #include <iostream>
 #include <fstream>
-//#include <algorithm>
 
 using namespace std;
 
@@ -31,12 +27,12 @@ GLuint LoadShaders(const char *vertex_file_path, const char *fragment_file_path)
     std::ifstream VertexShaderStream(vertex_file_path, std::ios::in);
     if (VertexShaderStream.is_open()) {
         std::string Line = "";
-        while (getline(VertexShaderStream, Line))
+        while (getline(VertexShaderStream, Line)) {
             VertexShaderCode += "\n" + Line;
+        }
         VertexShaderStream.close();
     } else {
-        printf("Impossible to open %s. Are you in the right directory ? Don't forget to read the FAQ !\n",
-               vertex_file_path);
+        printf("Impossible to open %s. Are you in the right directory?s\n", vertex_file_path);
         getchar();
         return 0;
     }
@@ -46,8 +42,9 @@ GLuint LoadShaders(const char *vertex_file_path, const char *fragment_file_path)
     std::ifstream FragmentShaderStream(fragment_file_path, std::ios::in);
     if (FragmentShaderStream.is_open()) {
         std::string Line = "";
-        while (getline(FragmentShaderStream, Line))
+        while (getline(FragmentShaderStream, Line)) {
             FragmentShaderCode += "\n" + Line;
+        }
         FragmentShaderStream.close();
     }
 
