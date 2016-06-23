@@ -17,17 +17,24 @@ namespace fastcraft {
 
     class Player {
     public:
-        Player(Camera *camera, sf::Window &window);
+        Player(sf::Window &window);
 
         ~Player();
 
         void handleUpdate(float deltaTime);
 
-        glm::mat4 ViewMatrix;
-        glm::mat4 ProjectionMatrix;
     private:
-        sf::Vector2i lastMousePosition;
-        sf::Window &_window;
+        // Initial position : on +Z
+        glm::vec3 position;
+
+        // Initial horizontal angle : toward -Z
+        float _horizontal_angle = 3.14f;
+        // Initial vertical angle : none
+        float _vertical_angle = 0.f;
+
+        sf::Vector2i _mouse_position;
+        sf::Vector2i _last_mouse_position;
+        sf::Window const &_window;
         Camera *_camera;
     };
 

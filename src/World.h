@@ -12,6 +12,8 @@ namespace fastcraft {
     class World {
     public:
         World();
+
+        void renderWorld();
     };
 
 }

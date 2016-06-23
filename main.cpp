@@ -76,14 +76,14 @@ int main() {
 
     ///////////////////////////////////////////////////
 
-    Camera *camera = new Camera();
-    Player *player = new Player(camera, window);
+    Player *player = new Player(window);
 
-    // Setup a perspective projection
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    GLfloat ratio = static_cast<float>(window.getSize().x) / window.getSize().y;
-    glFrustum(-ratio, ratio, -1.f, 1.f, 1.f, 500.f);
+    sf::Mouse::setPosition(sf::Vector2i(window.getSize().x / 2, window.getSize().y / 2), window);
+
+    // enable wireframe GL_FRONT, GL_BACK
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    // disable wireframe
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     // Create a clock for measuring the time elapsed
     sf::Clock clock;
@@ -110,19 +110,8 @@ int main() {
             }
         }
 
-        float deltaTime = clock.restart().asSeconds();
-
-        player->handleUpdate(deltaTime);
-
         // Compute the MVP matrix from keyboard and mouse input
-        glm::mat4 ModelMatrix = glm::mat4(1.0);
-        glm::mat4 MVP = player->ProjectionMatrix * player->ViewMatrix * ModelMatrix;
-        // Send our transformation to the currently bound shader, in the "MVP" uniform
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glMultMatrixf(&MVP[0][0]);
-//        glLoadMatrixf(&MVP[0][0]);
-//        glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
+        player->handleUpdate(clock.getElapsedTime().asSeconds());
 
         // check OpenGL error
         GLenum errGl;
@@ -131,14 +120,15 @@ int main() {
         }
 
         // Draw the background
-        window.pushGLStates();
-        window.draw(background);
-        window.popGLStates();
+//        window.pushGLStates();
+//        window.draw(background);
+//        window.popGLStates();
 
         // Clear the depth buffer
-        glClear(GL_DEPTH_BUFFER_BIT);
+        glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        block->setPosition(0, 0, -100);
+        block->setPosition(0, 0, -200);
         block->render();
 
         // Draw some text on top of our OpenGL object

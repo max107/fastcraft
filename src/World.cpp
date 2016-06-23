@@ -10,4 +10,8 @@ namespace fastcraft {
 
     }
 
+    void World::renderWorld() {
+
+    }
+
 }
