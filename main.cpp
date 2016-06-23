@@ -52,6 +52,7 @@ int main() {
     // be sure to call sf::Texture::getMaximumSize() and/or
     // sf::Shader::isAvailable() at least once before calling
     // setActive(), as those functions will cause a context switch
+    window.setMouseCursorVisible(false);
     window.setActive();
 
     // Enable Z-buffer read and write
@@ -68,10 +69,10 @@ int main() {
     ///////////////////////////////////////////////////
 
     // Create and compile our GLSL program from the shaders
-    GLuint programID = LoadShaders("../resources/shader/vertex.vertexshader",
-                                   "../resources/shader/fragment.fragmentshader");
+//    GLuint programID = LoadShaders("../resources/shader/vertex.vertexshader",
+//                                   "../resources/shader/fragment.fragmentshader");
     // Get a handle for our "MVP" uniform
-    GLuint MatrixID = glGetUniformLocation(programID, "mvp");
+//    GLuint MatrixID = glGetUniformLocation(programID, "mvp");
 
     ///////////////////////////////////////////////////
 
@@ -114,16 +115,20 @@ int main() {
         player->handleUpdate(deltaTime);
 
         // Compute the MVP matrix from keyboard and mouse input
-//        glm::mat4 ModelMatrix = glm::mat4(1.0);
-//        glm::mat4 MVP = player->ProjectionMatrix * player->ViewMatrix * ModelMatrix;
+        glm::mat4 ModelMatrix = glm::mat4(1.0);
+        glm::mat4 MVP = player->ProjectionMatrix * player->ViewMatrix * ModelMatrix;
         // Send our transformation to the currently bound shader, in the "MVP" uniform
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glMultMatrixf(&MVP[0][0]);
+//        glLoadMatrixf(&MVP[0][0]);
 //        glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 
         // check OpenGL error
-//        GLenum err;
-//        while ((err = glGetError()) != GL_NO_ERROR) {
-//            cerr << "OpenGL error: " << err << endl;
-//        }
+        GLenum errGl;
+        while ((errGl = glGetError()) != GL_NO_ERROR) {
+            cerr << "OpenGL error: " << errGl << endl;
+        }
 
         // Draw the background
         window.pushGLStates();
