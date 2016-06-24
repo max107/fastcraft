@@ -48,7 +48,11 @@ namespace fastcraft {
 
         SDL_GLContext SDL_GL_CreateContext(SDL_Window *window);
 
-        renderer = SDL_CreateRenderer(window, -1, 0);
+        int mods = 0;
+        if (settings.vsync) {
+            mods = SDL_RENDERER_PRESENTVSYNC;
+        }
+        renderer = SDL_CreateRenderer(window, -1, mods);
         if (renderer == nullptr) {
             std::cout << "Failed to create renderer : " << SDL_GetError();
             return false;
@@ -102,6 +106,10 @@ namespace fastcraft {
                 quit = true;
             } else if (event.type == SDL_KEYDOWN) {
                 switch (event.key.keysym.sym) {
+                    case SDLK_e:
+                        _show_cursor = !_show_cursor;
+                        SDL_ShowCursor(_show_cursor);
+                        break;
                     case SDLK_RIGHT:
                         // Cover with green and update
 //                    player.MoveRight();
@@ -115,7 +123,10 @@ namespace fastcraft {
                     case SDLK_UP:
 //                    player.MoveUp();
                         break;
-                    default :
+                    case SDLK_ESCAPE:
+                        quit = true;
+                        break;
+                    default:
                         break;
                 }
             }
@@ -123,12 +134,17 @@ namespace fastcraft {
     }
 
     bool Fastcraft::start() {
+        SDL_ShowCursor(_show_cursor);
+        SDL_CaptureMouse(SDL_TRUE);
         time_prev = high_resolution_clock::now();
 
         while (!quit) {
             handleInput();
-            update(getDelta());
 
+            update(getDelta());
+            if (settings.max_fps > 0 && getDelta() < (1000 / settings.max_fps)) {
+                SDL_Delay((1000 / settings.max_fps) - getDelta());
+            }
             render();
         }
         return EXIT_SUCCESS;

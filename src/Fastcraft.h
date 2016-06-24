@@ -35,6 +35,8 @@ namespace fastcraft {
     private:
         Settings settings;
 
+        int _show_cursor = SDL_DISABLE;
+
         high_resolution_clock::time_point time_prev;
 
         bool quit = false;
