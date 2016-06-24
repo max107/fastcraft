@@ -5,9 +5,9 @@
 #ifndef FASTCRAFT_BLOCK_H
 #define FASTCRAFT_BLOCK_H
 
-#include <SFML/Graphics.hpp>
-#include <SFML/System.hpp>
-#include <SFML/OpenGL.hpp>
+#include <GL/glew.h>
+#include <SDL2/SDL_image.h>
+#include <iostream>
 
 namespace fastcraft {
 
@@ -19,7 +19,7 @@ namespace fastcraft {
 
         void render();
 
-        GLuint loadTexture(sf::String path);
+        GLuint loadTexture(std::string path);
 
         void setPosition(int x, int y, int z);
 
