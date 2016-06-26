@@ -23,8 +23,16 @@ namespace fastcraft {
 
         void setPosition(int x, int y, int z);
 
+        void setTexture(std::string path);
+
+        void setSize(GLfloat size);
+
     private:
         GLuint texture = 0;
+
+        std::string _texture_path;
+
+        GLfloat _size = 20.f;
     };
 
 }

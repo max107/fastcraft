@@ -15,8 +15,12 @@ namespace fastcraft {
         glDeleteTextures(1, &texture);
     }
 
+    void Block::setSize(GLfloat size) {
+        _size = size;
+    }
+
     void Block::render() {
-        texture = loadTexture("../resources/texture.jpg");
+        texture = loadTexture(_texture_path);
 
         // Bind the texture
         glEnable(GL_TEXTURE_2D);
@@ -26,47 +30,47 @@ namespace fastcraft {
         static const GLfloat cube[] =
                 {
                         // positions    // texture coordinates
-                        -20, -20, -20, 0, 0,
-                        -20, 20, -20, 1, 0,
-                        -20, -20, 20, 0, 1,
-                        -20, -20, 20, 0, 1,
-                        -20, 20, -20, 1, 0,
-                        -20, 20, 20, 1, 1,
+                        -_size, -_size, -_size, 0, 0,
+                        -_size, _size, -_size, 1, 0,
+                        -_size, -_size, _size, 0, 1,
+                        -_size, -_size, _size, 0, 1,
+                        -_size, _size, -_size, 1, 0,
+                        -_size, _size, _size, 1, 1,
 
-                        20, -20, -20, 0, 0,
-                        20, 20, -20, 1, 0,
-                        20, -20, 20, 0, 1,
-                        20, -20, 20, 0, 1,
-                        20, 20, -20, 1, 0,
-                        20, 20, 20, 1, 1,
+                        _size, -_size, -_size, 0, 0,
+                        _size, _size, -_size, 1, 0,
+                        _size, -_size, _size, 0, 1,
+                        _size, -_size, _size, 0, 1,
+                        _size, _size, -_size, 1, 0,
+                        _size, _size, _size, 1, 1,
 
-                        -20, -20, -20, 0, 0,
-                        20, -20, -20, 1, 0,
-                        -20, -20, 20, 0, 1,
-                        -20, -20, 20, 0, 1,
-                        20, -20, -20, 1, 0,
-                        20, -20, 20, 1, 1,
+                        -_size, -_size, -_size, 0, 0,
+                        _size, -_size, -_size, 1, 0,
+                        -_size, -_size, _size, 0, 1,
+                        -_size, -_size, _size, 0, 1,
+                        _size, -_size, -_size, 1, 0,
+                        _size, -_size, _size, 1, 1,
 
-                        -20, 20, -20, 0, 0,
-                        20, 20, -20, 1, 0,
-                        -20, 20, 20, 0, 1,
-                        -20, 20, 20, 0, 1,
-                        20, 20, -20, 1, 0,
-                        20, 20, 20, 1, 1,
+                        -_size, _size, -_size, 0, 0,
+                        _size, _size, -_size, 1, 0,
+                        -_size, _size, _size, 0, 1,
+                        -_size, _size, _size, 0, 1,
+                        _size, _size, -_size, 1, 0,
+                        _size, _size, _size, 1, 1,
 
-                        -20, -20, -20, 0, 0,
-                        20, -20, -20, 1, 0,
-                        -20, 20, -20, 0, 1,
-                        -20, 20, -20, 0, 1,
-                        20, -20, -20, 1, 0,
-                        20, 20, -20, 1, 1,
+                        -_size, -_size, -_size, 0, 0,
+                        _size, -_size, -_size, 1, 0,
+                        -_size, _size, -_size, 0, 1,
+                        -_size, _size, -_size, 0, 1,
+                        _size, -_size, -_size, 1, 0,
+                        _size, _size, -_size, 1, 1,
 
-                        -20, -20, 20, 0, 0,
-                        20, -20, 20, 1, 0,
-                        -20, 20, 20, 0, 1,
-                        -20, 20, 20, 0, 1,
-                        20, -20, 20, 1, 0,
-                        20, 20, 20, 1, 1
+                        -_size, -_size, _size, 0, 0,
+                        _size, -_size, _size, 1, 0,
+                        -_size, _size, _size, 0, 1,
+                        -_size, _size, _size, 0, 1,
+                        _size, -_size, _size, 1, 0,
+                        _size, _size, _size, 1, 1
                 };
 
         // Enable position and texture coordinates vertex components
@@ -111,6 +115,10 @@ namespace fastcraft {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         return texture;
+    }
+
+    void Block::setTexture(std::string path) {
+        _texture_path = path;
     }
 
 }

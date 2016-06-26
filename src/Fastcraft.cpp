@@ -67,7 +67,8 @@ namespace fastcraft {
         return true;
     }
 
-    void Fastcraft::update(double delta) {
+    void Fastcraft::update(float deltaTime) {
+        handleInput(deltaTime);
 //    player.CheckFinishLine(topBar.GetRect().y + topBar.GetRect().h, windowRect);
 //
 //    for (auto &p : enemies) {
@@ -81,7 +82,7 @@ namespace fastcraft {
     }
 
     // Returns time since last time this function was called in seconds with nanosecond precision
-    double Fastcraft::getDelta() {
+    float Fastcraft::getDelta() {
         // Gett current time as a std::chrono::time_point
         // which basically contains info about the current point in time
         auto timeCurrent = high_resolution_clock::now();
@@ -90,7 +91,7 @@ namespace fastcraft {
         auto timeDiff = duration_cast<nanoseconds>(timeCurrent - time_prev);
 
         // Get the tics as a variable
-        double delta = timeDiff.count();
+        float delta = timeDiff.count();
 
         // Turn nanoseconds into seconds
         delta /= 1000000000;
@@ -99,54 +100,110 @@ namespace fastcraft {
         return delta;
     }
 
-    void Fastcraft::handleInput() {
+    void Fastcraft::handleInput(float deltaTime) {
+        float speed = 3.0f; // 3 units / second
+
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
-                quit = true;
-            } else if (event.type == SDL_KEYDOWN) {
+                isRunning = false;
+            }
+
+//            if (event.type == SDL_MOUSEMOTION) {
+                // Direction : Spherical coordinates to Cartesian coordinates conversion
+                direction = glm::vec3(std::cos(event.motion.yrel) * std::sin(event.motion.xrel),
+                                      std::sin(event.motion.yrel),
+                                      std::cos(event.motion.yrel) * std::cos(event.motion.xrel));
+                right = -glm::vec3(std::sin(event.motion.xrel - 3.14f / 2.0f),
+                                   0,
+                                   std::cos(event.motion.xrel - 3.14f / 2.0f));
+//            }
+
+            if (event.type == SDL_KEYDOWN) {
                 switch (event.key.keysym.sym) {
                     case SDLK_e:
                         _show_cursor = !_show_cursor;
                         SDL_ShowCursor(_show_cursor);
                         break;
                     case SDLK_RIGHT:
-                        // Cover with green and update
-//                    player.MoveRight();
+                    case SDLK_d:
+                        position += right * deltaTime * speed;
                         break;
                     case SDLK_LEFT:
-//                    player.MoveLeft();
+                    case SDLK_a:
+                        position -= right * deltaTime * speed;
                         break;
                     case SDLK_DOWN:
-//                    player.MoveDown();
+                    case SDLK_s:
+                        position -= direction * deltaTime * speed;
                         break;
                     case SDLK_UP:
-//                    player.MoveUp();
+                    case SDLK_w:
+                        position += direction * deltaTime * speed;
                         break;
                     case SDLK_ESCAPE:
-                        quit = true;
+                        isRunning = false;
                         break;
                     default:
                         break;
                 }
             }
+
+            _player->updatePosition(position, direction, right);
         }
     }
 
+    void setupCubeMap(GLuint& texture) {
+        glActiveTexture(GL_TEXTURE0);
+        glEnable(GL_TEXTURE_CUBE_MAP);
+        glGenTextures(1, &texture);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    }
+
+    void setupCubeMap(GLuint& texture, SDL_Surface *xpos, SDL_Surface *xneg, SDL_Surface *ypos, SDL_Surface *yneg, SDL_Surface *zpos, SDL_Surface *zneg) {
+        setupCubeMap(texture);
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGBA, xpos->w, xpos->h, 0, xpos->format->BytesPerPixel == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, xpos->pixels);
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGBA, xneg->w, xneg->h, 0, xneg->format->BytesPerPixel == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, xneg->pixels);
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGBA, ypos->w, ypos->h, 0, ypos->format->BytesPerPixel == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, ypos->pixels);
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGBA, yneg->w, yneg->h, 0, yneg->format->BytesPerPixel == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, yneg->pixels);
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGBA, zpos->w, zpos->h, 0, zpos->format->BytesPerPixel == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, zpos->pixels);
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGBA, zneg->w, zneg->h, 0, zneg->format->BytesPerPixel == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, zneg->pixels);
+    }
+
+    void deleteCubeMap(GLuint& texture) {
+        glDeleteTextures(1, &texture);
+    }
+
     bool Fastcraft::start() {
+        SDL_SetRelativeMouseMode(SDL_TRUE);
         SDL_ShowCursor(_show_cursor);
         SDL_CaptureMouse(SDL_TRUE);
         time_prev = high_resolution_clock::now();
 
-        while (!quit) {
-            handleInput();
+        _player = new Player(settings);
+        _player->setPosition(0, 0, 0);
 
-            update(getDelta());
+        _block = new Block();
+        _block->setTexture("../resources/texture.jpg");
+        _block->setSize(500);
+        _block->setPosition(0, 0, -200);
+
+        while (isRunning) {
+            float deltaTime = getDelta();
             if (settings.max_fps > 0 && getDelta() < (1000 / settings.max_fps)) {
-                SDL_Delay((1000 / settings.max_fps) - getDelta());
+                SDL_Delay((1000 / settings.max_fps) - deltaTime);
             }
+            update(deltaTime);
             render();
         }
+
+        SDL_DestroyWindow(window);
+        SDL_Quit();
         return EXIT_SUCCESS;
     }
 
@@ -154,21 +211,8 @@ namespace fastcraft {
         // Clear the window and make it all red
         SDL_RenderClear(renderer);
 
-        //    for (auto &p : enemies) {
-        //        p.Render(renderer);
-        //    }
-
-        // Setup a perspective projection
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        GLfloat ratio = static_cast<float>(settings.width) / settings.height;
-        glFrustum(-ratio, ratio, -1.f, 1.f, 1.f, 1500.f); // 1500.f
-//        glm::mat4 _model_matrix = glm::mat4(1.0);
-//        glm::mat4 _projection_matrix = glm::perspective(glm::radians(45.f), 4.0f / 3.0f, 0.1f, 1500.f);
-
-        Block *block = new Block();
-        block->setPosition(0, 0, -100);
-        block->render();
+        _player->render();
+        _block->render();
 
         // Render the changes above
         SDL_RenderPresent(renderer);

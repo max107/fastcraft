@@ -15,6 +15,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Player.h"
 #include "Settings.h"
 #include "Block.h"
 
@@ -33,23 +34,31 @@ namespace fastcraft {
         void render();
 
     private:
+        glm::vec3 position;
+        glm::vec3 direction;
+        glm::vec3 right;
+
         Settings settings;
 
         int _show_cursor = SDL_DISABLE;
 
         high_resolution_clock::time_point time_prev;
 
-        bool quit = false;
+        bool isRunning = true;
 
         SDL_Window *window;
 
         SDL_Renderer *renderer;
 
-        void update(double delta);
+        void update(float deltaTime);
 
-        void handleInput();
+        void handleInput(float deltaTime);
 
-        double getDelta();
+        float getDelta();
+
+        Player *_player;
+        Camera *_camera;
+        Block *_block;
     };
 
 }
