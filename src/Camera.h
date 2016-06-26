@@ -24,6 +24,8 @@ namespace fastcraft {
 
         void setPosition(int x, int y, int z);
 
+        void setPosition(glm::vec3 position);
+
         void setDrawDistance(float zfar);
 
         void setFov(float fov);
@@ -31,6 +33,10 @@ namespace fastcraft {
         void updatePosition(glm::vec3 position, glm::vec3 direction, glm::vec3 right);
 
         void render();
+
+        void setDirection(glm::vec3 direction);
+
+        void setRight(glm::vec3 right);
 
         Settings getSettings();
 
@@ -45,6 +51,9 @@ namespace fastcraft {
 
         float _fov = 45.0f;
         float _draw_distance = 500.f;
+
+        glm::vec3 _direction;
+        glm::vec3 _right;
     };
 
 }

@@ -102,6 +102,7 @@ namespace fastcraft {
 
     void Fastcraft::handleInput(float deltaTime) {
         float speed = 3.0f; // 3 units / second
+        float mouseSpeed = 4.0f; // 3 units / second
 
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
@@ -109,15 +110,13 @@ namespace fastcraft {
                 isRunning = false;
             }
 
-//            if (event.type == SDL_MOUSEMOTION) {
+            if (event.type == SDL_MOUSEMOTION) {
+                float x = event.motion.x / (mouseSpeed * 10);
+                float y = event.motion.y / (mouseSpeed * 10);
                 // Direction : Spherical coordinates to Cartesian coordinates conversion
-                direction = glm::vec3(std::cos(event.motion.yrel) * std::sin(event.motion.xrel),
-                                      std::sin(event.motion.yrel),
-                                      std::cos(event.motion.yrel) * std::cos(event.motion.xrel));
-                right = -glm::vec3(std::sin(event.motion.xrel - 3.14f / 2.0f),
-                                   0,
-                                   std::cos(event.motion.xrel - 3.14f / 2.0f));
-//            }
+                direction = glm::vec3(std::cos(y) * std::sin(x), std::sin(y), std::cos(y) * std::cos(x));
+                right = -glm::vec3(std::sin(x - 3.14f / 2.0f), 0, std::cos(x - 3.14f / 2.0f));
+            }
 
             if (event.type == SDL_KEYDOWN) {
                 switch (event.key.keysym.sym) {
@@ -149,35 +148,12 @@ namespace fastcraft {
                 }
             }
 
-            _player->updatePosition(position, direction, right);
+            _player->setDirection(direction);
+            _player->setRight(right);
+            _player->setPosition(position);
         }
     }
 
-    void setupCubeMap(GLuint& texture) {
-        glActiveTexture(GL_TEXTURE0);
-        glEnable(GL_TEXTURE_CUBE_MAP);
-        glGenTextures(1, &texture);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    }
-
-    void setupCubeMap(GLuint& texture, SDL_Surface *xpos, SDL_Surface *xneg, SDL_Surface *ypos, SDL_Surface *yneg, SDL_Surface *zpos, SDL_Surface *zneg) {
-        setupCubeMap(texture);
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGBA, xpos->w, xpos->h, 0, xpos->format->BytesPerPixel == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, xpos->pixels);
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGBA, xneg->w, xneg->h, 0, xneg->format->BytesPerPixel == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, xneg->pixels);
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGBA, ypos->w, ypos->h, 0, ypos->format->BytesPerPixel == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, ypos->pixels);
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGBA, yneg->w, yneg->h, 0, yneg->format->BytesPerPixel == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, yneg->pixels);
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGBA, zpos->w, zpos->h, 0, zpos->format->BytesPerPixel == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, zpos->pixels);
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGBA, zneg->w, zneg->h, 0, zneg->format->BytesPerPixel == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, zneg->pixels);
-    }
-
-    void deleteCubeMap(GLuint& texture) {
-        glDeleteTextures(1, &texture);
-    }
 
     bool Fastcraft::start() {
         SDL_SetRelativeMouseMode(SDL_TRUE);
@@ -191,7 +167,7 @@ namespace fastcraft {
         _block = new Block();
         _block->setTexture("../resources/texture.jpg");
         _block->setSize(500);
-        _block->setPosition(0, 0, -200);
+        _block->setPosition(0, 0, 100);
 
         while (isRunning) {
             float deltaTime = getDelta();
