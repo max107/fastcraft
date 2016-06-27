@@ -8,12 +8,10 @@
 namespace fastcraft {
 
     struct Settings {
-        // todo
         bool fullscreen = false;
         int width = 1024;
         int height = 768;
         bool vsync = true;
-        // todo
         int max_fps = 60;
     };
 

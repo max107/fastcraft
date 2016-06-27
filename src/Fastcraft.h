@@ -6,6 +6,7 @@
 #define FASTCRAFT_FASTCRAFT_H
 
 #include <iostream>
+#include <vector>
 #include <chrono>
 #include <GL/glew.h>
 
@@ -18,6 +19,7 @@
 #include "Player.h"
 #include "Settings.h"
 #include "Block.h"
+#include "Shader.h"
 
 using namespace std::chrono;
 
