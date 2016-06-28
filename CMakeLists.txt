@@ -5,6 +5,8 @@ project(fastcraft)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 set(SOURCE_FILES
+        src/Skybox.cpp
+        src/Skybox.h
         src/Shader.cpp
         src/Shader.h
         src/Object.cpp

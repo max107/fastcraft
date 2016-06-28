@@ -1,8 +1,8 @@
 #version 120
 
-uniform mat4 MVP;
+uniform vec4 MVP;
 
-void main()
-{
+void main() {
     gl_Position = MVP;
 }
+

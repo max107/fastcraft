@@ -10,6 +10,10 @@ namespace fastcraft {
 
     }
 
+    Fastcraft::~Fastcraft() {
+        SDL_GL_DeleteContext(_gl_context);
+    }
+
     bool Fastcraft::init() {
         if (SDL_Init(SDL_INIT_EVERYTHING) == -1) {
             std::cout << " Failed to initialize SDL : " << SDL_GetError() << std::endl;
@@ -31,6 +35,8 @@ namespace fastcraft {
             return false;
         }
 
+        _gl_context = SDL_GL_CreateContext(window);
+
         // http://headerphile.com/sdl2/opengl-part-1-sdl-opengl-awesome/
 
         // Set our OpenGL version.
@@ -38,22 +44,21 @@ namespace fastcraft {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
         // SDL_GL_CONTEXT_CORE gives us only the newer version, deprecated functions are disabled
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
-//        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+//        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
         // Turn on double buffering with a 24bit Z buffer.
         // You may need to change this to 16 or 32 for your system
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
         SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
-        SDL_GLContext SDL_GL_CreateContext(SDL_Window *window);
-
         // Init GLEW
         // Apparently, this is needed for Apple. Thanks to Ross Vander for letting me know
-#ifndef __APPLE__
+#ifdef __APPLE__
         glewExperimental = GL_TRUE;
-        if (!glewInit()) {
-            std::cout << "Failed to init glew" << std::endl;
+        GLenum err = glewInit();
+        if (GLEW_OK != err) {
+            fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
             return false;
         } else if (!GLEW_VERSION_2_1) {
             std::cout << "Failed to support API 2.1" << std::endl;
@@ -115,6 +120,9 @@ namespace fastcraft {
                 // Direction : Spherical coordinates to Cartesian coordinates conversion
                 direction = glm::vec3(std::cos(y) * std::sin(x), std::sin(y), std::cos(y) * std::cos(x));
                 right = -glm::vec3(std::sin(x - 3.14f / 2.0f), 0, std::cos(x - 3.14f / 2.0f));
+
+                _player->setDirection(direction);
+                _player->setRight(right);
             }
 
             if (event.type == SDL_KEYDOWN) {
@@ -145,15 +153,15 @@ namespace fastcraft {
                     default:
                         break;
                 }
-            }
 
-            _player->setDirection(direction);
-            _player->setRight(right);
-            _player->setPosition(position);
+                _player->setPosition(position);
+            }
         }
     }
 
     bool Fastcraft::start() {
+        SDL_GL_SwapWindow(window);
+
         SDL_SetRelativeMouseMode(SDL_TRUE);
         SDL_ShowCursor(_show_cursor);
         SDL_CaptureMouse(SDL_TRUE);
@@ -165,8 +173,10 @@ namespace fastcraft {
         GLfloat ratio = static_cast<float>(settings.width) / settings.height;
         glFrustum(-ratio, ratio, -1.f, 1.f, 1.f, 1500.f); // 1500.f
 
-        Shader mainShader("../resources/shader/main.vs", "../resources/shader/main.frag");
-//        mainShader.use();
+        Shader mainShader("../resources/shader/main.vert", "../resources/shader/main.frag");
+        mainShader.use();
+
+        _skybox = new Skybox();
 
         _player = new Player(settings);
         _player->setPosition(0, 0, 0);
@@ -174,7 +184,7 @@ namespace fastcraft {
         _block = new Block();
         _block->setTexture("../resources/texture.jpg");
         _block->setSize(20);
-        _block->setPosition(0, 0, 100);
+        _block->setPosition(0, 0, -100);
 
         while (isRunning) {
             float deltaTime = getDelta();
@@ -194,6 +204,7 @@ namespace fastcraft {
         // Clear the window and make it all red
         SDL_RenderClear(renderer);
 
+        _skybox->render();
         _player->render();
         _block->render();
 

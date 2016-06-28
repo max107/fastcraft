@@ -8,6 +8,7 @@
 #include <iostream>
 #include <vector>
 #include <chrono>
+
 #include <GL/glew.h>
 
 #include <SDL2/SDL.h>
@@ -16,6 +17,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Skybox.h"
 #include "Player.h"
 #include "Settings.h"
 #include "Block.h"
@@ -29,6 +31,8 @@ namespace fastcraft {
     public:
         Fastcraft();
 
+        ~Fastcraft();
+
         bool init();
 
         bool start();
@@ -36,6 +40,8 @@ namespace fastcraft {
         void render();
 
     private:
+        SDL_GLContext _gl_context;
+
         glm::vec3 position;
         glm::vec3 direction;
         glm::vec3 right;
@@ -59,7 +65,7 @@ namespace fastcraft {
         float getDelta();
 
         Player *_player;
-        Camera *_camera;
+        Skybox *_skybox;
         Block *_block;
     };
 

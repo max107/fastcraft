@@ -6,6 +6,7 @@
 #define FASTCRAFT_BLOCK_H
 
 #include <GL/glew.h>
+
 #include <SDL2/SDL_image.h>
 #include <iostream>
 

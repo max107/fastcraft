@@ -7,7 +7,6 @@ int main(int argc, char *args[]) {
     if (!fastcraft->init()) {
         return EXIT_FAILURE;
     }
-
     return fastcraft->start();
 }
 

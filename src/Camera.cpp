@@ -31,16 +31,12 @@ namespace fastcraft {
         _direction = direction;
     }
 
-    void Camera::updatePosition(glm::vec3 position, glm::vec3 direction, glm::vec3 right) {
-
-    }
-
     void Camera::render() {
         // Up vector
         glm::vec3 up = glm::cross(_right, _direction);
 
         _model_matrix = glm::mat4(1.f);
-        // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
+        // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> N units
         _projection_matrix = glm::perspective(glm::radians(_fov), 4.0f / 3.0f, 0.1f, _draw_distance);
         // Camera matrix
         // 1 - Camera is here
