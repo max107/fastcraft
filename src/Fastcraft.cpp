@@ -1,7 +1,3 @@
-//
-// Created by Максим Фалалеев on 23/06/16.
-//
-
 #include "Fastcraft.h"
 
 namespace fastcraft {
@@ -109,9 +105,9 @@ namespace fastcraft {
                         break;
                 }
             }
-
-            _player->handleInput(event, deltaTime);
         }
+
+        _player->update(deltaTime);
     }
 
     // Returns time since last time this function was called in seconds with nanosecond precision
@@ -130,6 +126,8 @@ namespace fastcraft {
     }
 
     bool Fastcraft::start() {
+        FpsManager *fps = new FpsManager(settings.max_fps);
+
 //        SDL_GL_SwapWindow(window);
 
         // Make sure that the mouse cursor is centered in the window at program start
@@ -151,11 +149,21 @@ namespace fastcraft {
 
         while (isRunning) {
             float deltaTime = getDelta();
+            update(deltaTime);
+            render();
+
+            if (fps->limit() == true) {
+                printf("FPS:%i/%i fps - Min: %ims Max: %ims Average: %fms \n", 1, fps->getFps(), settings.max_fps, fps->getFrameMin(), fps->getFrameMax(), fps->getFrameAverage());
+            }
+            /*
+            float deltaTime = getDelta();
+            update(deltaTime);
+
             if (settings.max_fps > 0 && getDelta() < (1000 / settings.max_fps)) {
                 SDL_Delay((1000 / settings.max_fps) - deltaTime);
             }
-            update(deltaTime);
             render();
+             */
         }
 
         SDL_DestroyWindow(window);

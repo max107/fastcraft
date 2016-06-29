@@ -46,7 +46,9 @@ namespace fastcraft {
 
         void handleMouseMove(int xrel, int yrel);
 
-        void handleInput(SDL_Event &event, float deltaTime);
+        void handleInput(float deltaTime);
+
+        void update(float deltaTime);
 
     private:
         float yaw;

@@ -52,7 +52,8 @@ namespace fastcraft {
 
         // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> N units
         _projection_matrix = glm::perspective(glm::radians(_fov),
-                                              static_cast<float>(_settings.width) / static_cast<float>(_settings.height),
+                                              static_cast<float>(_settings.width) /
+                                              static_cast<float>(_settings.height),
                                               0.1f, _draw_distance);
         // Camera matrix
         // 1 - Camera is here
@@ -76,49 +77,40 @@ namespace fastcraft {
         glLoadIdentity();
     }
 
-    void Camera::handleInput(SDL_Event &event, float deltaTime) {
+    void Camera::handleInput(float deltaTime) {
         int speed = 100;
         GLfloat velocity = speed * deltaTime;
 
-        if (event.type == SDL_MOUSEMOTION) {
-            printf("Mouse moved by %d,%d to (%d,%d)\n",
-                   event.motion.xrel, event.motion.yrel,
-                   event.motion.x, event.motion.y);
+        const Uint8 *keystates = SDL_GetKeyboardState(NULL);
 
-            handleMouseMove(event.motion.xrel, event.motion.yrel);
+        if (keystates[SDL_SCANCODE_LSHIFT] || keystates[SDL_SCANCODE_RSHIFT]) {
+            velocity = velocity * 4;
         }
 
-        if (event.type == SDL_KEYDOWN) {
-            switch (event.key.keysym.sym) {
-                case SDLK_RIGHT:
-                case SDLK_d:
-//                    _position += glm::normalize(glm::cross(_front, _up)) * velocity;
-                    _position -= _right * velocity;
-                    break;
-                case SDLK_LEFT:
-                case SDLK_a:
-//                    _position -= glm::normalize(glm::cross(_front, _up)) * velocity;
-                    _position += _right * velocity;
-                    break;
-                case SDLK_DOWN:
-                case SDLK_s:
-                    _position -= _front * velocity;
-                    break;
-                case SDLK_UP:
-                case SDLK_w:
-                    _position += _front * velocity;
-                    break;
-                default:
-                    break;
-            }
-            // <-- this one-liner keeps the user at the ground level (xz plane)
-            // _position.y = 0.0f;
+        if (keystates[SDL_SCANCODE_W]) {
+            _position += _front * velocity;
+        } else if (keystates[SDL_SCANCODE_S]) {
+            _position -= _front * velocity;
         }
+
+        if (keystates[SDL_SCANCODE_A]) {
+            _position += _right * velocity;
+        } else if (keystates[SDL_SCANCODE_D]) {
+            _position -= _right * velocity;
+        }
+
+//        _position.y = 0.0f;
+    }
+
+    void Camera::update(float deltaTime) {
+        int xrel, yrel;
+        SDL_GetRelativeMouseState(&xrel, &yrel);
+        handleMouseMove(xrel, yrel);
+        handleInput(deltaTime);
     }
 
     void Camera::handleMouseMove(int xrel, int yrel) {
-//        float x = xrel;
-//        float y = yrel;
+        // printf("Mouse moved by %d,%d\n", xrel, yrel);
 
         float xoffset = xrel;
         float yoffset = yrel;
@@ -140,8 +132,8 @@ namespace fastcraft {
 
         glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
         _front = glm::normalize(glm::vec3(cos(glm::radians(yaw)) * cos(glm::radians(pitch)),
-                                              -sin(glm::radians(pitch)),
-                                              sin(glm::radians(yaw)) * cos(glm::radians(pitch))));
+                                          -sin(glm::radians(pitch)),
+                                          sin(glm::radians(yaw)) * cos(glm::radians(pitch))));
         _right = glm::normalize(glm::cross(up, _front));
         _up = glm::cross(_front, _right);
     }
