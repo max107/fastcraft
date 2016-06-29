@@ -52,6 +52,8 @@ namespace fastcraft {
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
         SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
+        SDL_GL_SetSwapInterval(1);
+
         // Init GLEW
         // Apparently, this is needed for Apple. Thanks to Ross Vander for letting me know
 #ifdef __APPLE__
@@ -79,6 +81,8 @@ namespace fastcraft {
         // Set size of renderer to the same as window
         SDL_RenderSetLogicalSize(renderer, settings.width, settings.height);
 
+        // Make our background black
+        glClearColor(0.5, 0.5, 0.5, 1.0);
         // Set color of renderer to red
         SDL_SetRenderDrawColor(renderer, 155, 155, 155, 255);
 
@@ -108,6 +112,9 @@ namespace fastcraft {
         float speed = 100.0f; // 3 units / second
         float mouseSpeed = 1.f / 100.f; // 3 units / second
 
+        int prev_x, curr_x, rel_x; // previous, current and relative x-coordinates
+        int prev_y, curr_y, rel_y; // previous, current and relative y-coordinates
+
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
@@ -115,8 +122,24 @@ namespace fastcraft {
             }
 
             if (event.type == SDL_MOUSEMOTION) {
+                // Remember the last position
+                prev_x = curr_x;
+                prev_y = curr_y;
+
+                // Update the current position
+                curr_x = event.motion.x;
+                curr_y = event.motion.y;
+
+                // Calculate the relative movement
+                rel_x = curr_x - prev_x;
+                rel_y = curr_y - prev_y;
+
+//                printf("Mouse moved by %d,%d to (%d,%d)\n",
+//                       event.motion.xrel, event.motion.yrel,
+//                       event.motion.x, event.motion.y);
+
                 printf("Mouse moved by %d,%d to (%d,%d)\n",
-                       event.motion.xrel, event.motion.yrel,
+                       rel_x, rel_y,
                        event.motion.x, event.motion.y);
 
 //                float x = event.motion.x / (mouseSpeed * 10);
@@ -138,8 +161,11 @@ namespace fastcraft {
 //                float x = settings.width / 2 - (event.motion.x * 0.001f);
 //                float y = settings.height / 2 - (event.motion.y * 0.001f);
 
-                float x = (event.motion.x - (settings.width / 2)) * mouseSpeed;
-                float y = (event.motion.y - (settings.height / 2)) * mouseSpeed;
+//                float x = (rel_x - (settings.width / 2)) * mouseSpeed;
+//                float y = (rel_y - (settings.height / 2)) * mouseSpeed;
+
+                float x = rel_x * mouseSpeed;
+                float y = rel_y * mouseSpeed;
                 direction = glm::vec3(std::cos(y) * std::sin(x), std::sin(y), std::cos(y) * std::cos(x));
                 right = glm::vec3(std::sin(x - 3.14f / 2.0f), 0, std::cos(x - 3.14f / 2.0f));
                 _player->setDirection(direction);
@@ -186,7 +212,7 @@ namespace fastcraft {
         // Make sure that the mouse cursor is centered in the window at program start
         SDL_WarpMouseInWindow(window, settings.width / 2, settings.height / 2);
         SDL_SetRelativeMouseMode(SDL_TRUE);
-//        SDL_ShowCursor(_show_cursor);
+        SDL_ShowCursor(_show_cursor);
         SDL_CaptureMouse(SDL_TRUE);
 
         time_prev = high_resolution_clock::now();
@@ -217,10 +243,13 @@ namespace fastcraft {
     void Fastcraft::render() {
         // Clear the window and make it all red
         SDL_RenderClear(renderer);
+        // glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
         _player->render();
 //        _skybox->render();
         _block->render();
+
+        // SDL_GL_SwapWindow(window);
 
         // Render the changes above
         SDL_RenderPresent(renderer);

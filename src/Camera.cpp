@@ -8,13 +8,15 @@ namespace fastcraft {
 
     Camera::Camera(Settings settings) {
         _settings = settings;
+
+//        initShader();
     }
 
     void Camera::initShader() {
         Shader mainShader("../resources/shader/main.vert", "../resources/shader/main.frag");
         mainShader.use();
 //        Get a handle for our "mvp" uniform
-        _matrix_id = glGetUniformLocation(mainShader.getProgramId(), "mvp");
+        _matrix_id = glGetUniformLocation(mainShader.getProgramId(), "position");
     }
 
     void Camera::loadShaderMatrix() {
@@ -48,7 +50,7 @@ namespace fastcraft {
         glm::vec3 up = glm::cross(_right, _direction);
 
         // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> N units
-        _projection_matrix = glm::perspective(glm::radians(_fov), 4.0f / 3.0f, 0.1f, _draw_distance);
+        _projection_matrix = glm::perspective(glm::radians(_fov), static_cast<float>(_settings.width) / static_cast<float>(_settings.height), 0.1f, _draw_distance);
         // Camera matrix
         // 1 - Camera is here
         // 2 - and looks here : at the same position, plus "direction"
@@ -62,7 +64,8 @@ namespace fastcraft {
 //        std::cout << "Right: "  << _right.x << _right.y << std::endl;
 
         // Send our transformation to GPU
-        glLoadMatrixf(glm::value_ptr(_mvp));
+         glLoadMatrixf(glm::value_ptr(_mvp));
+//        loadShaderMatrix();
 
         /* Make sure we're chaning the model view and not the projection */
         glMatrixMode(GL_MODELVIEW);
