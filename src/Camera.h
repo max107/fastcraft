@@ -32,8 +32,6 @@ namespace fastcraft {
 
         void setFov(float fov);
 
-        void updatePosition(glm::vec3 position, glm::vec3 direction, glm::vec3 right);
-
         void render();
 
         void setDirection(glm::vec3 direction);
@@ -41,6 +39,12 @@ namespace fastcraft {
         void setRight(glm::vec3 right);
 
         Settings getSettings();
+
+        void initShader();
+
+        void loadShaderMatrix();
+
+        void handleMouseMove(int mouseX, int mouseY, int mouseXRel, int mouseYRel);
 
     private:
         glm::mat4 _projection_matrix;

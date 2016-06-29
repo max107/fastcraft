@@ -11,7 +11,7 @@ namespace fastcraft {
         bool fullscreen = false;
         int width = 1024;
         int height = 768;
-        bool vsync = true;
+        bool vsync = false;
         int max_fps = 60;
     };
 

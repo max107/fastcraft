@@ -105,8 +105,8 @@ namespace fastcraft {
     }
 
     void Fastcraft::handleInput(float deltaTime) {
-        float speed = 3.0f; // 3 units / second
-        float mouseSpeed = 4.0f; // 3 units / second
+        float speed = 100.0f; // 3 units / second
+        float mouseSpeed = 1.f / 100.f; // 3 units / second
 
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
@@ -115,13 +115,33 @@ namespace fastcraft {
             }
 
             if (event.type == SDL_MOUSEMOTION) {
-                float x = event.motion.x / (mouseSpeed * 10);
-                float y = event.motion.y / (mouseSpeed * 10);
+                printf("Mouse moved by %d,%d to (%d,%d)\n",
+                       event.motion.xrel, event.motion.yrel,
+                       event.motion.x, event.motion.y);
 
-                // Direction : Spherical coordinates to Cartesian coordinates conversion
+//                float x = event.motion.x / (mouseSpeed * 10);
+//                float y = event.motion.y / (mouseSpeed * 10);
+//                // Direction : Spherical coordinates to Cartesian coordinates conversion
+//                direction = glm::vec3(std::cos(y) * std::sin(x), std::sin(y), std::cos(y) * std::cos(x));
+//                right = glm::vec3(std::sin(x - 3.14f / 2.0f), 0, std::cos(x - 3.14f / 2.0f));
+//                _player->setDirection(direction);
+//                _player->setRight(right);
+
+//                float x = mouseSpeed * (settings.width / 2 - event.motion.x);
+//                float y = mouseSpeed * (settings.width / 2 - event.motion.y);
+//                std::cout << x << " " << y << std::endl;
+//                direction = glm::vec3(std::cos(y) * std::sin(x), std::sin(y), std::cos(y) * std::cos(x));
+//                right = glm::vec3(std::sin(x - 3.14f / 2.0f), 0, std::cos(x - 3.14f / 2.0f));
+//                _player->setDirection(direction);
+//                _player->setRight(right);
+
+//                float x = settings.width / 2 - (event.motion.x * 0.001f);
+//                float y = settings.height / 2 - (event.motion.y * 0.001f);
+
+                float x = (event.motion.x - (settings.width / 2)) * mouseSpeed;
+                float y = (event.motion.y - (settings.height / 2)) * mouseSpeed;
                 direction = glm::vec3(std::cos(y) * std::sin(x), std::sin(y), std::cos(y) * std::cos(x));
-                right = -glm::vec3(std::sin(x - 3.14f / 2.0f), 0, std::cos(x - 3.14f / 2.0f));
-
+                right = glm::vec3(std::sin(x - 3.14f / 2.0f), 0, std::cos(x - 3.14f / 2.0f));
                 _player->setDirection(direction);
                 _player->setRight(right);
             }
@@ -166,26 +186,19 @@ namespace fastcraft {
         // Make sure that the mouse cursor is centered in the window at program start
         SDL_WarpMouseInWindow(window, settings.width / 2, settings.height / 2);
         SDL_SetRelativeMouseMode(SDL_TRUE);
-        SDL_ShowCursor(_show_cursor);
+//        SDL_ShowCursor(_show_cursor);
         SDL_CaptureMouse(SDL_TRUE);
 
         time_prev = high_resolution_clock::now();
 
-        // Setup a perspective projection
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        GLfloat ratio = static_cast<float>(settings.width) / settings.height;
-        glFrustum(-ratio, ratio, -1.f, 1.f, 1.f, 1500.f); // 1500.f
-
-        _skybox = new Skybox();
-
+//        _skybox = new Skybox();
         _player = new Player(settings);
-        _player->setPosition(0, 0, 0);
+        _player->setPosition(0, 0, 5);
 
         _block = new Block();
         _block->setTexture("../resources/texture.jpg");
         _block->setSize(20);
-        _block->setPosition(0, 0, 10);
+        _block->setPosition(0, 0, -100);
 
         while (isRunning) {
             float deltaTime = getDelta();
@@ -205,8 +218,8 @@ namespace fastcraft {
         // Clear the window and make it all red
         SDL_RenderClear(renderer);
 
-        _skybox->render();
         _player->render();
+//        _skybox->render();
         _block->render();
 
         // Render the changes above

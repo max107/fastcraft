@@ -8,20 +8,18 @@ namespace fastcraft {
 
     Camera::Camera(Settings settings) {
         _settings = settings;
+    }
 
-        // Setup a perspective projection
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        GLfloat ratio = static_cast<float>(_settings.width) / settings.height;
-        glFrustum(-ratio, ratio, -1.f, 1.f, 1.f, _draw_distance); // 1500.f
-
-        _mvp = _projection_matrix * _view_matrix * _model_matrix;
-
+    void Camera::initShader() {
         Shader mainShader("../resources/shader/main.vert", "../resources/shader/main.frag");
         mainShader.use();
-
-        // Get a handle for our "mvp" uniform
+//        Get a handle for our "mvp" uniform
         _matrix_id = glGetUniformLocation(mainShader.getProgramId(), "mvp");
+    }
+
+    void Camera::loadShaderMatrix() {
+        // Send our transformation to GPU
+        glUniformMatrix4fv(_matrix_id, 1, GL_FALSE, &_mvp[0][0]);
     }
 
     void Camera::setFov(float fov) {
@@ -40,6 +38,12 @@ namespace fastcraft {
     }
 
     void Camera::render() {
+        // Setup a perspective projection
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        GLfloat ratio = static_cast<float>(_settings.width) / _settings.height;
+        glFrustum(-ratio, ratio, -1.f, 1.f, 1.f, _draw_distance); // 1500.f
+
         // Up vector
         glm::vec3 up = glm::cross(_right, _direction);
 
@@ -54,23 +58,48 @@ namespace fastcraft {
         // Compute the MVP matrix from keyboard and mouse input
         _mvp = _projection_matrix * _view_matrix * _model_matrix;
 
-        std::cout << "Direction: " << _direction.x << _direction.y << std::endl;
-        std::cout << "Right: "  << _right.x << _right.y << std::endl;
+//        std::cout << "Direction: " << _direction.x << _direction.y << std::endl;
+//        std::cout << "Right: "  << _right.x << _right.y << std::endl;
 
         // Send our transformation to GPU
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
+        glLoadMatrixf(glm::value_ptr(_mvp));
 
-//        glLoadMatrixf(glm::value_ptr(_mvp));
-        glUniformMatrix4fv(_matrix_id, 1, GL_FALSE, &_mvp[0][0]);
+        /* Make sure we're chaning the model view and not the projection */
+        glMatrixMode(GL_MODELVIEW);
+        /* Reset The View */
+        glLoadIdentity();
+    }
+
+    void Camera::handleMouseMove(int mouseX, int mouseY, int mouseXRel, int mouseYRel) {
+
     }
 
     void Camera::setPosition(int x, int y, int z) {
         _position = glm::vec3(x, y, z);
+
+        // Up vector
+        glm::vec3 up = glm::cross(_right, _direction);
+        // Camera matrix
+        // 1 - Camera is here
+        // 2 - and looks here : at the same position, plus "direction"
+        // 3 - Head is up (set to 0,-1,0 to look upside-down)
+        _view_matrix = glm::lookAt(_position, _position + _direction, up);
+        // Compute the MVP matrix from keyboard and mouse input
+        _mvp = _projection_matrix * _view_matrix * _model_matrix;
     }
 
     void Camera::setPosition(glm::vec3 position) {
         _position = position;
+
+        // Up vector
+        glm::vec3 up = glm::cross(_right, _direction);
+        // Camera matrix
+        // 1 - Camera is here
+        // 2 - and looks here : at the same position, plus "direction"
+        // 3 - Head is up (set to 0,-1,0 to look upside-down)
+        _view_matrix = glm::lookAt(_position, _position + _direction, up);
+        // Compute the MVP matrix from keyboard and mouse input
+        _mvp = _projection_matrix * _view_matrix * _model_matrix;
     }
 
     Settings Camera::getSettings() {
@@ -80,5 +109,4 @@ namespace fastcraft {
     void Camera::setRight(glm::vec3 right) {
         _right = right;
     }
-
 }
