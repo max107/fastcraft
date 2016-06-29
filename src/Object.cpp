@@ -10,4 +10,8 @@ namespace fastcraft {
 
     }
 
+    void Object::update(float deltaTime) {
+
+    }
+
 }

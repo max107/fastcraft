@@ -90,7 +90,28 @@ namespace fastcraft {
     }
 
     void Fastcraft::update(float deltaTime) {
-        handleInput(deltaTime);
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                isRunning = false;
+            }
+
+            if (event.type == SDL_KEYDOWN) {
+                switch (event.key.keysym.sym) {
+                    case SDLK_e:
+                        _show_cursor = !_show_cursor;
+                        SDL_ShowCursor(_show_cursor);
+                        break;
+                    case SDLK_ESCAPE:
+                        isRunning = false;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            _player->handleInput(event, deltaTime);
+        }
     }
 
     // Returns time since last time this function was called in seconds with nanosecond precision
@@ -108,106 +129,8 @@ namespace fastcraft {
         return delta;
     }
 
-    void Fastcraft::handleInput(float deltaTime) {
-        float speed = 100.0f; // 3 units / second
-        float mouseSpeed = 1.f / 100.f; // 3 units / second
-
-        int prev_x, curr_x, rel_x; // previous, current and relative x-coordinates
-        int prev_y, curr_y, rel_y; // previous, current and relative y-coordinates
-
-        SDL_Event event;
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
-                isRunning = false;
-            }
-
-            if (event.type == SDL_MOUSEMOTION) {
-                // Remember the last position
-                prev_x = curr_x;
-                prev_y = curr_y;
-
-                // Update the current position
-                curr_x = event.motion.x;
-                curr_y = event.motion.y;
-
-                // Calculate the relative movement
-                rel_x = curr_x - prev_x;
-                rel_y = curr_y - prev_y;
-
-//                printf("Mouse moved by %d,%d to (%d,%d)\n",
-//                       event.motion.xrel, event.motion.yrel,
-//                       event.motion.x, event.motion.y);
-
-                printf("Mouse moved by %d,%d to (%d,%d)\n",
-                       rel_x, rel_y,
-                       event.motion.x, event.motion.y);
-
-//                float x = event.motion.x / (mouseSpeed * 10);
-//                float y = event.motion.y / (mouseSpeed * 10);
-//                // Direction : Spherical coordinates to Cartesian coordinates conversion
-//                direction = glm::vec3(std::cos(y) * std::sin(x), std::sin(y), std::cos(y) * std::cos(x));
-//                right = glm::vec3(std::sin(x - 3.14f / 2.0f), 0, std::cos(x - 3.14f / 2.0f));
-//                _player->setDirection(direction);
-//                _player->setRight(right);
-
-//                float x = mouseSpeed * (settings.width / 2 - event.motion.x);
-//                float y = mouseSpeed * (settings.width / 2 - event.motion.y);
-//                std::cout << x << " " << y << std::endl;
-//                direction = glm::vec3(std::cos(y) * std::sin(x), std::sin(y), std::cos(y) * std::cos(x));
-//                right = glm::vec3(std::sin(x - 3.14f / 2.0f), 0, std::cos(x - 3.14f / 2.0f));
-//                _player->setDirection(direction);
-//                _player->setRight(right);
-
-//                float x = settings.width / 2 - (event.motion.x * 0.001f);
-//                float y = settings.height / 2 - (event.motion.y * 0.001f);
-
-//                float x = (rel_x - (settings.width / 2)) * mouseSpeed;
-//                float y = (rel_y - (settings.height / 2)) * mouseSpeed;
-
-                float x = rel_x * mouseSpeed;
-                float y = rel_y * mouseSpeed;
-                direction = glm::vec3(std::cos(y) * std::sin(x), std::sin(y), std::cos(y) * std::cos(x));
-                right = glm::vec3(std::sin(x - 3.14f / 2.0f), 0, std::cos(x - 3.14f / 2.0f));
-                _player->setDirection(direction);
-                _player->setRight(right);
-            }
-
-            if (event.type == SDL_KEYDOWN) {
-                switch (event.key.keysym.sym) {
-                    case SDLK_e:
-                        _show_cursor = !_show_cursor;
-                        SDL_ShowCursor(_show_cursor);
-                        break;
-                    case SDLK_RIGHT:
-                    case SDLK_d:
-                        position += right * deltaTime * speed;
-                        break;
-                    case SDLK_LEFT:
-                    case SDLK_a:
-                        position -= right * deltaTime * speed;
-                        break;
-                    case SDLK_DOWN:
-                    case SDLK_s:
-                        position -= direction * deltaTime * speed;
-                        break;
-                    case SDLK_UP:
-                    case SDLK_w:
-                        position += direction * deltaTime * speed;
-                        break;
-                    case SDLK_ESCAPE:
-                        isRunning = false;
-                        break;
-                    default:
-                        break;
-                }
-
-                _player->setPosition(position);
-            }
-        }
-    }
-
     bool Fastcraft::start() {
-        SDL_GL_SwapWindow(window);
+//        SDL_GL_SwapWindow(window);
 
         // Make sure that the mouse cursor is centered in the window at program start
         SDL_WarpMouseInWindow(window, settings.width / 2, settings.height / 2);

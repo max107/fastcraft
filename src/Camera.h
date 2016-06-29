@@ -44,9 +44,14 @@ namespace fastcraft {
 
         void loadShaderMatrix();
 
-        void handleMouseMove(int mouseX, int mouseY, int mouseXRel, int mouseYRel);
+        void handleMouseMove(int xrel, int yrel);
+
+        void handleInput(SDL_Event &event, float deltaTime);
 
     private:
+        float yaw;
+        float pitch;
+
         glm::mat4 _projection_matrix;
         // камера находится в точке (0,0,5)
         // она смотрит на точку (0,0,0)
@@ -61,13 +66,14 @@ namespace fastcraft {
         GLint _matrix_id;
 
         Settings _settings;
-        glm::vec3 _position = glm::vec3(0.0f, 0.0f, 0.0f);
+        glm::vec3 _position;
 
         float _fov = 45.0f;
         float _draw_distance = 500.f;
 
-        glm::vec3 _direction;
+        glm::vec3 _front;
         glm::vec3 _right;
+        glm::vec3 _up;
     };
 
 }

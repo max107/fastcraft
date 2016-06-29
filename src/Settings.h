@@ -13,6 +13,8 @@ namespace fastcraft {
         int height = 768;
         bool vsync = false;
         int max_fps = 60;
+
+        int mouse_sensitivity = 6;
     };
 
 }

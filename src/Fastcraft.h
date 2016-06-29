@@ -40,32 +40,20 @@ namespace fastcraft {
 
     private:
         SDL_GLContext _gl_context;
-
-        glm::vec3 position;
-        glm::vec3 direction;
-        glm::vec3 right;
-
         Settings settings;
-
         int _show_cursor = SDL_DISABLE;
-
         high_resolution_clock::time_point time_prev;
-
         bool isRunning = true;
-
         SDL_Window *window;
-
         SDL_Renderer *renderer;
-
-        void update(float deltaTime);
-
-        void handleInput(float deltaTime);
-
-        float getDelta();
 
         Player *_player;
         Skybox *_skybox;
         Block *_block;
+
+        void update(float deltaTime);
+
+        float getDelta();
     };
 
 }

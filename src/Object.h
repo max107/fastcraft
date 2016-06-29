@@ -10,6 +10,8 @@ namespace fastcraft {
     class Object {
     public:
         virtual void render();
+
+        virtual void update(float deltaTime);
     };
 
 }
