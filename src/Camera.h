@@ -16,6 +16,7 @@
 
 #include "Object.h"
 #include "Settings.h"
+#include "Shader.h"
 
 namespace fastcraft {
 
@@ -43,9 +44,17 @@ namespace fastcraft {
 
     private:
         glm::mat4 _projection_matrix;
-        glm::mat4 _view_matrix;
-        glm::mat4 _model_matrix;
+        // камера находится в точке (0,0,5)
+        // она смотрит на точку (0,0,0)
+        // вектор, идущий из центра камеры к ее верху, равен (0, 1, 0)
+        // то есть, камера расположена горизонтально
+        glm::mat4 _view_matrix = glm::lookAt(glm::vec3(0, 0, 5),
+                                             glm::vec3(0, 0, 0),
+                                             glm::vec3(0, 1, 0));
+        glm::mat4 _model_matrix = glm::mat4(1.f);
         glm::mat4 _mvp;
+
+        GLint _matrix_id;
 
         Settings _settings;
         glm::vec3 _position = glm::vec3(0.0f, 0.0f, 0.0f);

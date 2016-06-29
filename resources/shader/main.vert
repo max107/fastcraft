@@ -1,8 +1,8 @@
 #version 120
 
-uniform vec4 MVP;
+uniform vec4 mvp;
 
 void main() {
-    gl_Position = MVP;
+    gl_Position = mvp;
 }
 

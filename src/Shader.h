@@ -22,6 +22,8 @@ namespace fastcraft {
         // Uses the current shader
         void use();
 
+        GLuint getProgramId();
+
     private:
         GLuint _program;
     };

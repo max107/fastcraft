@@ -21,7 +21,6 @@
 #include "Player.h"
 #include "Settings.h"
 #include "Block.h"
-#include "Shader.h"
 
 using namespace std::chrono;
 

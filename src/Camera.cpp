@@ -14,6 +14,14 @@ namespace fastcraft {
         glLoadIdentity();
         GLfloat ratio = static_cast<float>(_settings.width) / settings.height;
         glFrustum(-ratio, ratio, -1.f, 1.f, 1.f, _draw_distance); // 1500.f
+
+        _mvp = _projection_matrix * _view_matrix * _model_matrix;
+
+        Shader mainShader("../resources/shader/main.vert", "../resources/shader/main.frag");
+        mainShader.use();
+
+        // Get a handle for our "mvp" uniform
+        _matrix_id = glGetUniformLocation(mainShader.getProgramId(), "mvp");
     }
 
     void Camera::setFov(float fov) {
@@ -35,7 +43,6 @@ namespace fastcraft {
         // Up vector
         glm::vec3 up = glm::cross(_right, _direction);
 
-        _model_matrix = glm::mat4(1.f);
         // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> N units
         _projection_matrix = glm::perspective(glm::radians(_fov), 4.0f / 3.0f, 0.1f, _draw_distance);
         // Camera matrix
@@ -47,10 +54,15 @@ namespace fastcraft {
         // Compute the MVP matrix from keyboard and mouse input
         _mvp = _projection_matrix * _view_matrix * _model_matrix;
 
+        std::cout << "Direction: " << _direction.x << _direction.y << std::endl;
+        std::cout << "Right: "  << _right.x << _right.y << std::endl;
+
         // Send our transformation to GPU
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        glLoadMatrixf(glm::value_ptr(_mvp));
+
+//        glLoadMatrixf(glm::value_ptr(_mvp));
+        glUniformMatrix4fv(_matrix_id, 1, GL_FALSE, &_mvp[0][0]);
     }
 
     void Camera::setPosition(int x, int y, int z) {

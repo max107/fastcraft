@@ -117,6 +117,7 @@ namespace fastcraft {
             if (event.type == SDL_MOUSEMOTION) {
                 float x = event.motion.x / (mouseSpeed * 10);
                 float y = event.motion.y / (mouseSpeed * 10);
+
                 // Direction : Spherical coordinates to Cartesian coordinates conversion
                 direction = glm::vec3(std::cos(y) * std::sin(x), std::sin(y), std::cos(y) * std::cos(x));
                 right = -glm::vec3(std::sin(x - 3.14f / 2.0f), 0, std::cos(x - 3.14f / 2.0f));
@@ -162,9 +163,12 @@ namespace fastcraft {
     bool Fastcraft::start() {
         SDL_GL_SwapWindow(window);
 
+        // Make sure that the mouse cursor is centered in the window at program start
+        SDL_WarpMouseInWindow(window, settings.width / 2, settings.height / 2);
         SDL_SetRelativeMouseMode(SDL_TRUE);
         SDL_ShowCursor(_show_cursor);
         SDL_CaptureMouse(SDL_TRUE);
+
         time_prev = high_resolution_clock::now();
 
         // Setup a perspective projection
@@ -172,9 +176,6 @@ namespace fastcraft {
         glLoadIdentity();
         GLfloat ratio = static_cast<float>(settings.width) / settings.height;
         glFrustum(-ratio, ratio, -1.f, 1.f, 1.f, 1500.f); // 1500.f
-
-        Shader mainShader("../resources/shader/main.vert", "../resources/shader/main.frag");
-        mainShader.use();
 
         _skybox = new Skybox();
 
@@ -184,7 +185,7 @@ namespace fastcraft {
         _block = new Block();
         _block->setTexture("../resources/texture.jpg");
         _block->setSize(20);
-        _block->setPosition(0, 0, -100);
+        _block->setPosition(0, 0, 10);
 
         while (isRunning) {
             float deltaTime = getDelta();

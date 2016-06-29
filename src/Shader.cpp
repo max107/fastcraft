@@ -83,4 +83,8 @@ namespace fastcraft {
         glUseProgram(_program);
     }
 
+    GLuint Shader::getProgramId() {
+        return _program;
+    }
+
 }
