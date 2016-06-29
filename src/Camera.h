@@ -50,6 +50,8 @@ namespace fastcraft {
 
         void update(float deltaTime);
 
+        void setFly(bool fly);
+
     private:
         float yaw;
         float pitch;
@@ -76,6 +78,8 @@ namespace fastcraft {
         glm::vec3 _front;
         glm::vec3 _right;
         glm::vec3 _up;
+
+        bool _fly = true;
     };
 
 }

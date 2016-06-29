@@ -153,7 +153,15 @@ namespace fastcraft {
             render();
 
             if (fps->limit() == true) {
-                printf("FPS:%i/%i fps - Min: %ims Max: %ims Average: %fms \n", 1, fps->getFps(), settings.max_fps, fps->getFrameMin(), fps->getFrameMax(), fps->getFrameAverage());
+                char display_text[128];
+                sprintf(display_text,"FPS: %i/%i fps - %ims %ims %fms",
+                        fps->getFps(), settings.max_fps, fps->getFrameMin(), fps->getFrameMax(), fps->getFrameAverage());
+                SDL_SetWindowTitle(window, display_text);
+
+                /*
+                printf("FPS:%i/%i fps - Min: %ims Max: %ims Average: %fms \n",
+                        fps->getFps(), settings.max_fps, fps->getFrameMin(), fps->getFrameMax(), fps->getFrameAverage());
+                        */
             }
             /*
             float deltaTime = getDelta();

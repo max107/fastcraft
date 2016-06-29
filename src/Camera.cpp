@@ -99,7 +99,9 @@ namespace fastcraft {
             _position -= _right * velocity;
         }
 
-//        _position.y = 0.0f;
+        if (!_fly) {
+            _position.y = 0.0f;
+        }
     }
 
     void Camera::update(float deltaTime) {
@@ -153,4 +155,9 @@ namespace fastcraft {
     void Camera::setRight(glm::vec3 right) {
         _right = right;
     }
+
+    void Camera::setFly(bool fly) {
+        _fly = fly;
+    }
+
 }
