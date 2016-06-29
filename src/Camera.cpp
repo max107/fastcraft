@@ -111,6 +111,8 @@ namespace fastcraft {
                 default:
                     break;
             }
+            // <-- this one-liner keeps the user at the ground level (xz plane)
+            // _position.y = 0.0f;
         }
     }
 
