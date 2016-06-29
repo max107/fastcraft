@@ -114,29 +114,36 @@ namespace fastcraft {
     void Camera::handleMouseMove(int xrel, int yrel) {
         // printf("Mouse moved by %d,%d\n", xrel, yrel);
 
-        float xoffset = xrel;
-        float yoffset = yrel;
+        GLfloat sensitivity = _settings.mouse_sensitivity;
+        if (sensitivity == 0) {
+            sensitivity = 1;
+        }
+        sensitivity /= 100;
 
-        GLfloat sensitivity = 0.05;
-        xoffset *= sensitivity;
-        yoffset *= sensitivity;
+        float xoffset = xrel * sensitivity;
+        float yoffset = yrel * sensitivity;
 
         yaw += xoffset;
-        pitch += yoffset;
+        if (yaw >= 360) {
+            yaw = -360;
+        }
+        if (yaw <= -360) {
+            yaw = 360;
+        }
 
+        pitch += yoffset;
         if (pitch > 89.0f) {
             pitch = 89.0f;
         }
-
         if (pitch < -89.0f) {
             pitch = -89.0f;
         }
 
-        glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-        _front = glm::normalize(glm::vec3(cos(glm::radians(yaw)) * cos(glm::radians(pitch)),
-                                          -sin(glm::radians(pitch)),
-                                          sin(glm::radians(yaw)) * cos(glm::radians(pitch))));
-        _right = glm::normalize(glm::cross(up, _front));
+        glm::vec3 front(cos(glm::radians(yaw)) * cos(glm::radians(pitch)),
+                        -sin(glm::radians(pitch)),
+                        sin(glm::radians(yaw)) * cos(glm::radians(pitch)));
+        _front = glm::normalize(front);
+        _right = glm::normalize(glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), _front));
         _up = glm::cross(_front, _right);
     }
 

@@ -9,12 +9,12 @@ namespace fastcraft {
 
     struct Settings {
         bool fullscreen = false;
-        int width = 1024;
-        int height = 768;
-        bool vsync = false;
-        int max_fps = 60;
+        unsigned int width = 1024;
+        unsigned int height = 768;
 
-        int mouse_sensitivity = 6;
+        bool vsync = false;
+        unsigned int limit_fps = 60;
+        unsigned int mouse_sensitivity = 0;
     };
 
 }

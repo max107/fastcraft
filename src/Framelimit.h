@@ -10,8 +10,8 @@ namespace fastcraft {
     class FpsManager {
 
     public:
-        // The +0.00001 on max_frame_ticks is to offset the losses from rounding Otherwise we get 61/60 fps
         FpsManager(float fps_max) {
+            // The +0.00001 on max_frame_ticks is to offset the losses from rounding Otherwise we get 61/60 fps
             max_frame_ticks = (1000.0 / fps_max) + 0.00001;
             frame_count = 0;
             last_second_ticks = SDL_GetTicks();
@@ -51,7 +51,7 @@ namespace fastcraft {
                 last_second_ticks = SDL_GetTicks();
                 return true;
             }
-            //--//
+
             return false;
         }
 

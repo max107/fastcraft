@@ -126,7 +126,7 @@ namespace fastcraft {
     }
 
     bool Fastcraft::start() {
-        FpsManager *fps = new FpsManager(settings.max_fps);
+        FpsManager *fps = new FpsManager(settings.limit_fps);
 
 //        SDL_GL_SwapWindow(window);
 
@@ -152,10 +152,10 @@ namespace fastcraft {
             update(deltaTime);
             render();
 
-            if (fps->limit() == true) {
+            if (fps->limit()) {
                 char display_text[128];
                 sprintf(display_text,"FPS: %i/%i fps - %ims %ims %fms",
-                        fps->getFps(), settings.max_fps, fps->getFrameMin(), fps->getFrameMax(), fps->getFrameAverage());
+                        fps->getFps(), settings.limit_fps, fps->getFrameMin(), fps->getFrameMax(), fps->getFrameAverage());
                 SDL_SetWindowTitle(window, display_text);
 
                 /*
@@ -163,15 +163,6 @@ namespace fastcraft {
                         fps->getFps(), settings.max_fps, fps->getFrameMin(), fps->getFrameMax(), fps->getFrameAverage());
                         */
             }
-            /*
-            float deltaTime = getDelta();
-            update(deltaTime);
-
-            if (settings.max_fps > 0 && getDelta() < (1000 / settings.max_fps)) {
-                SDL_Delay((1000 / settings.max_fps) - deltaTime);
-            }
-            render();
-             */
         }
 
         SDL_DestroyWindow(window);
