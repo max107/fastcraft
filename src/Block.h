@@ -6,13 +6,14 @@
 #define FASTCRAFT_BLOCK_H
 
 #include <GL/glew.h>
-
 #include <SDL2/SDL_image.h>
 #include <iostream>
 
+#include "Object.h"
+
 namespace fastcraft {
 
-    class Block {
+    class Block : public Object {
     public:
         Block();
 
@@ -21,8 +22,6 @@ namespace fastcraft {
         void render();
 
         GLuint loadTexture(std::string path);
-
-        void setPosition(int x, int y, int z);
 
         void setTexture(std::string path);
 

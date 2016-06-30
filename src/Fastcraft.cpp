@@ -130,7 +130,7 @@ namespace fastcraft {
 
         _block = new Block();
         _block->setTexture("../resources/texture.jpg");
-        _block->setSize(20);
+        _block->setSize(1);
         _block->setPosition(0, 0, -100);
 
         while (isRunning) {
@@ -140,7 +140,7 @@ namespace fastcraft {
 
             if (_fps->limit()) {
                 char display_text[128];
-                sprintf(display_text,"FPS: %i/%i fps - %ims %ims %fms",
+                sprintf(display_text, "FPS: %i/%i fps - %ims %ims %fms",
                         _fps->getFps(), settings.limit_fps, _fps->getFrameMin(), _fps->getFrameMax(),
                         _fps->getFrameAverage());
                 SDL_SetWindowTitle(window, display_text);

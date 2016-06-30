@@ -55,8 +55,8 @@ namespace fastcraft {
         void setFly(bool fly);
 
     private:
-        float yaw;
-        float pitch;
+        float yaw = 0.f;
+        float pitch = 0.f;
 
         glm::mat4 _projection_matrix;
         // камера находится в точке (0,0,5)

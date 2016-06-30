@@ -16,7 +16,8 @@ namespace fastcraft {
     }
 
     void Block::setSize(GLfloat size) {
-        _size = size;
+        int sizeStep = 8;
+        _size = size * sizeStep;
     }
 
     void Block::render() {
@@ -83,14 +84,12 @@ namespace fastcraft {
         glDisableClientState(GL_NORMAL_ARRAY);
         glDisableClientState(GL_COLOR_ARRAY);
 
+//        glFrontFace(GL_CW);
+//        glCullFace(GL_BACK);
+//        glEnable(GL_CULL_FACE);
+
         // Draw the cube
         glDrawArrays(GL_TRIANGLES, 0, 36);
-    }
-
-    void Block::setPosition(int x, int y, int z) {
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-        glTranslatef(x, y, z);
     }
 
     GLuint Block::loadTexture(std::string path) {

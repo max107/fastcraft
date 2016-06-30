@@ -14,4 +14,24 @@ namespace fastcraft {
 
     }
 
+    void Object::setPosition(int x, int y, int z) {
+        _position = glm::vec3(x, y, z);
+        updatePosition();
+    }
+
+    void Object::setPosition(glm::vec3 position) {
+        _position = position;
+        updatePosition();
+    }
+
+    void Object::updatePosition() {
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        glTranslatef(_position.x, _position.y, _position.z);
+    }
+
+    glm::vec3 Object::getPosition() {
+        return _position;
+    }
+
 }
