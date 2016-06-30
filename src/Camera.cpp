@@ -111,26 +111,24 @@ namespace fastcraft {
         handleInput(deltaTime);
     }
 
-    void Camera::handleMouseMove(int xrel, int yrel) {
-        // printf("Mouse moved by %d,%d\n", xrel, yrel);
-
+    GLfloat Camera::getSensitivity() {
         GLfloat sensitivity = _settings.mouse_sensitivity;
         if (sensitivity == 0) {
             sensitivity = 1;
         }
         sensitivity /= 100;
+        return sensitivity;
+    }
+
+    void Camera::handleMouseMove(int xrel, int yrel) {
+        // printf("Mouse moved by %d,%d\n", xrel, yrel);
+
+        GLfloat sensitivity = getSensitivity();
 
         float xoffset = xrel * sensitivity;
         float yoffset = yrel * sensitivity;
 
         yaw += xoffset;
-        if (yaw >= 360) {
-            yaw = -360;
-        }
-        if (yaw <= -360) {
-            yaw = 360;
-        }
-
         pitch += yoffset;
         if (pitch > 89.0f) {
             pitch = 89.0f;

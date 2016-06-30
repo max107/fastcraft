@@ -14,7 +14,7 @@ namespace fastcraft {
 
         bool vsync = false;
         unsigned int limit_fps = 60;
-        unsigned int mouse_sensitivity = 0;
+        unsigned int mouse_sensitivity = 6;
     };
 
 }

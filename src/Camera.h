@@ -32,6 +32,8 @@ namespace fastcraft {
 
         void setFov(float fov);
 
+        GLfloat getSensitivity();
+
         void render();
 
         void setDirection(glm::vec3 direction);

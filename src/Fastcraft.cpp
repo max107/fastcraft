@@ -110,23 +110,9 @@ namespace fastcraft {
         _player->update(deltaTime);
     }
 
-    // Returns time since last time this function was called in seconds with nanosecond precision
-    float Fastcraft::getDelta() {
-        // Gett current time as a std::chrono::time_point
-        // which basically contains info about the current point in time
-        auto timeCurrent = high_resolution_clock::now();
-        // Compare the two to create time_point containing delta time in nanosecnds
-        auto timeDiff = duration_cast<nanoseconds>(timeCurrent - time_prev);
-        // Get the tics as a variable
-        float delta = timeDiff.count();
-        // Turn nanoseconds into seconds
-        delta /= 1000000000;
-        time_prev = timeCurrent;
-        return delta;
-    }
-
     bool Fastcraft::start() {
-        FpsManager *fps = new FpsManager(settings.limit_fps);
+        _fps = new FpsManager(settings.limit_fps);
+        _timer = new Timer;
 
 //        SDL_GL_SwapWindow(window);
 
@@ -148,14 +134,15 @@ namespace fastcraft {
         _block->setPosition(0, 0, -100);
 
         while (isRunning) {
-            float deltaTime = getDelta();
+            double deltaTime = _timer->getDeltaTime();
             update(deltaTime);
             render();
 
-            if (fps->limit()) {
+            if (_fps->limit()) {
                 char display_text[128];
                 sprintf(display_text,"FPS: %i/%i fps - %ims %ims %fms",
-                        fps->getFps(), settings.limit_fps, fps->getFrameMin(), fps->getFrameMax(), fps->getFrameAverage());
+                        _fps->getFps(), settings.limit_fps, _fps->getFrameMin(), _fps->getFrameMax(),
+                        _fps->getFrameAverage());
                 SDL_SetWindowTitle(window, display_text);
 
                 /*

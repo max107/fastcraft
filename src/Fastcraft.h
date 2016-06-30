@@ -22,6 +22,7 @@
 #include "Settings.h"
 #include "Block.h"
 #include "Framelimit.h"
+#include "Timer.h"
 
 using namespace std::chrono;
 
@@ -55,6 +56,9 @@ namespace fastcraft {
         void update(float deltaTime);
 
         float getDelta();
+
+        FpsManager *_fps;
+        Timer *_timer;
     };
 
 }
