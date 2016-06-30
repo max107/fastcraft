@@ -129,7 +129,6 @@ namespace fastcraft {
         float yoffset = yrel * sensitivity;
 
         yaw += xoffset;
-        printf("Yaw: %f\n", yaw);
         pitch += yoffset;
         if (pitch > 89.0f) {
             pitch = 89.0f;

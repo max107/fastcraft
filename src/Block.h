@@ -14,6 +14,7 @@
 namespace fastcraft {
 
     class Block : public Object {
+
     public:
         Block();
 

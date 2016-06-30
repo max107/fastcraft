@@ -84,10 +84,6 @@ namespace fastcraft {
         glDisableClientState(GL_NORMAL_ARRAY);
         glDisableClientState(GL_COLOR_ARRAY);
 
-//        glFrontFace(GL_CW);
-//        glCullFace(GL_BACK);
-//        glEnable(GL_CULL_FACE);
-
         // Draw the cube
         glDrawArrays(GL_TRIANGLES, 0, 36);
     }
