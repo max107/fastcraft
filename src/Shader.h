@@ -43,6 +43,8 @@ namespace fastcraft {
 
         void disable();
 
+        GLint attrib(const GLchar* attribName) const;
+
     private:
         GLuint _program;
     };

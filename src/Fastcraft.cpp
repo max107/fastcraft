@@ -132,11 +132,11 @@ namespace fastcraft {
 //        _block->setSize(1);
 //        _block->setPosition(0, 0, -100);
 
-        glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+        // Enable depth buffer
         glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LEQUAL);
-        glClearDepth(1.0f);
-        glClear(GL_DEPTH_BUFFER_BIT);
+
+        // Enable back face culling
+//        glEnable(GL_CULL_FACE);
 
         while (isRunning) {
             double deltaTime = _timer->getDeltaTime();

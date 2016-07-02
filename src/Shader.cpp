@@ -97,4 +97,17 @@ namespace fastcraft {
         glUseProgram(0);
     }
 
+    GLint Shader::attrib(const GLchar *attribName) const {
+        if (!attribName) {
+            throw std::runtime_error("attribName was NULL");
+        }
+
+        GLint attrib = glGetAttribLocation(_program, attribName);
+        if (attrib == -1) {
+            throw std::runtime_error(std::string("Program attribute not found: ") + attribName);
+        }
+
+        return attrib;
+    }
+
 }

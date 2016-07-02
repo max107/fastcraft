@@ -53,6 +53,53 @@ namespace fastcraft {
 
         float _size = 50.f;
         // Define a 3D cube (6 faces made of 2 triangles composed by 3 vertices)
+
+//        static const GLfloat cube[] =
+//                {
+//                        // positions    // texture coordinates
+//                        -_size, -_size, -_size, 0, 0,
+//                        -_size, _size, -_size, 1, 0,
+//                        -_size, -_size, _size, 0, 1,
+//                        -_size, -_size, _size, 0, 1,
+//                        -_size, _size, -_size, 1, 0,
+//                        -_size, _size, _size, 1, 1,
+//
+//                        _size, -_size, -_size, 0, 0,
+//                        _size, _size, -_size, 1, 0,
+//                        _size, -_size, _size, 0, 1,
+//                        _size, -_size, _size, 0, 1,
+//                        _size, _size, -_size, 1, 0,
+//                        _size, _size, _size, 1, 1,
+//
+//                        -_size, -_size, -_size, 0, 0,
+//                        _size, -_size, -_size, 1, 0,
+//                        -_size, -_size, _size, 0, 1,
+//                        -_size, -_size, _size, 0, 1,
+//                        _size, -_size, -_size, 1, 0,
+//                        _size, -_size, _size, 1, 1,
+//
+//                        -_size, _size, -_size, 0, 0,
+//                        _size, _size, -_size, 1, 0,
+//                        -_size, _size, _size, 0, 1,
+//                        -_size, _size, _size, 0, 1,
+//                        _size, _size, -_size, 1, 0,
+//                        _size, _size, _size, 1, 1,
+//
+//                        -_size, -_size, -_size, 0, 0,
+//                        _size, -_size, -_size, 1, 0,
+//                        -_size, _size, -_size, 0, 1,
+//                        -_size, _size, -_size, 0, 1,
+//                        _size, -_size, -_size, 1, 0,
+//                        _size, _size, -_size, 1, 1,
+//
+//                        -_size, -_size, _size, 0, 0,
+//                        _size, -_size, _size, 1, 0,
+//                        -_size, _size, _size, 0, 1,
+//                        -_size, _size, _size, 0, 1,
+//                        _size, -_size, _size, 1, 0,
+//                        _size, _size, _size, 1, 1
+//                };
+
         static const GLfloat cube[] =
                 {
                         // positions
@@ -131,15 +178,13 @@ namespace fastcraft {
     }
 
     void Skybox::render(glm::mat4 mvp) {
-        GLint OldCullFaceMode;
-        glGetIntegerv(GL_CULL_FACE_MODE, &OldCullFaceMode);
-        GLint OldDepthFuncMode;
-        glGetIntegerv(GL_DEPTH_FUNC, &OldDepthFuncMode);
-
-        glCullFace(GL_FRONT);
-        glDepthFunc(GL_LEQUAL);
-
-        glDepthMask (GL_FALSE);
+//        GLint OldCullFaceMode;
+//        glGetIntegerv(GL_CULL_FACE_MODE, &OldCullFaceMode);
+//        GLint OldDepthFuncMode;
+//        glGetIntegerv(GL_DEPTH_FUNC, &OldDepthFuncMode);
+//        glCullFace(GL_FRONT);
+//        glDepthFunc(GL_LEQUAL);
+//        glDepthMask (GL_FALSE);
 
         shader->enable();
 
@@ -151,13 +196,14 @@ namespace fastcraft {
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
-        glDepthMask(GL_TRUE);
+
+//        glDepthMask(GL_TRUE);
 
         shader->setUniformMatrix("mvp", mvp);
         shader->disable();
 
-        glCullFace(OldCullFaceMode);
-        glDepthFunc(OldDepthFuncMode);
+//        glCullFace(OldCullFaceMode);
+//        glDepthFunc(OldDepthFuncMode);
     }
 
 }
