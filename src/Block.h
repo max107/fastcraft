@@ -10,6 +10,7 @@
 #include <iostream>
 
 #include "Object.h"
+#include "VertexArray.h"
 
 namespace fastcraft {
 
@@ -22,6 +23,10 @@ namespace fastcraft {
 
         void render();
 
+        void enableTexture();
+
+        void disableTexture();
+
         GLuint loadTexture(std::string path);
 
         void setTexture(std::string path);
@@ -29,11 +34,11 @@ namespace fastcraft {
         void setSize(GLfloat size);
 
     private:
+        VertexArray *vao;
+
         GLuint texture = 0;
 
-        std::string _texture_path;
-
-        GLfloat _size = 20.f;
+        GLfloat _size = 16.0f;
     };
 
 }

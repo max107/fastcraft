@@ -1,3 +1,6 @@
+set(ENV{CC} /usr/bin/clang)
+set(ENV{CXX} /usr/bin/clang++)
+
 cmake_minimum_required(VERSION 3.5)
 set(EXECUTABLE_NAME fastcraft)
 project(fastcraft)
@@ -6,6 +9,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 set(SOURCE_FILES
         src/Timer.h
+        src/Texture.cpp
+        src/Texture.h
         src/Framelimit.h
         src/Skybox.cpp
         src/Skybox.h
@@ -22,6 +27,9 @@ set(SOURCE_FILES
         src/Camera.h
         src/Block.cpp
         src/Block.h
+        src/File.h
+        src/VertexArray.cpp
+        src/VertexArray.h
         #        src/Chunk.cpp
         #        src/Chunk.h
         #        src/World.cpp

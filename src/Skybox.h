@@ -8,21 +8,37 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <SDL2/SDL_image.h>
 #include <iostream>
+#include <vector>
 
+#include "Texture.h"
 #include "Object.h"
+#include "VertexArray.h"
+#include "Shader.h"
 
 namespace fastcraft {
 
     class Skybox : public Object {
     public:
-        void render();
+        Skybox();
 
-        GLuint loadTexture(std::string path);
+        void render(glm::mat4 mvp);
+
+    protected:
+        void setup();
 
     private:
+        VertexArray *vao;
+
+        GLuint skyboxVAO, skyboxVBO;
+
         GLuint texture = 0;
+
+        Shader *shader;
+
+        GLuint loadTextures(std::vector<const GLchar*> faces);
     };
 
 }

@@ -7,19 +7,55 @@
 namespace fastcraft {
 
     Block::Block() {
+        GLfloat vertices[8 * 3] = {
+                -_size, -_size, _size,
+                _size, -_size, _size,
+                _size, _size, _size,
+                -_size, _size, _size,
+                -_size, -_size, -_size,
+                _size, -_size, -_size,
+                _size, _size, -_size,
+                -_size, _size, -_size
+        };
 
+        GLuint indices[6 * 6] = {
+                0, 1, 2, 2, 3, 0,
+                3, 2, 6, 6, 7, 3,
+                7, 6, 5, 5, 4, 7,
+                4, 0, 3, 3, 7, 4,
+                0, 1, 5, 5, 4, 0,
+                1, 5, 6, 6, 2, 1
+        };
+        vao = new VertexArray(vertices, indices, nullptr, nullptr, 8 * 3, 6 * 6);
+
+        // Load static textures here
+        glActiveTexture(GL_TEXTURE0);
+    }
+
+    void Block::enableTexture() {
+        glBindTexture(GL_TEXTURE_2D, texture);
+    }
+
+    void Block::disableTexture() {
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
 
     Block::~Block() {
         // Don't forget to destroy our texture
         glDeleteTextures(1, &texture);
+        delete vao;
     }
 
     void Block::setSize(GLfloat size) {
-        int sizeStep = 8;
+        int sizeStep = 16;
         _size = size * sizeStep;
     }
 
+    void Block::render() {
+        vao->render();
+    }
+
+    /*
     void Block::render() {
         texture = loadTexture(_texture_path);
 
@@ -87,6 +123,7 @@ namespace fastcraft {
         // Draw the cube
         glDrawArrays(GL_TRIANGLES, 0, 36);
     }
+     */
 
     GLuint Block::loadTexture(std::string path) {
         // Load an OpenGL texture.
@@ -113,7 +150,7 @@ namespace fastcraft {
     }
 
     void Block::setTexture(std::string path) {
-        _texture_path = path;
+        texture = loadTexture(path);
     }
 
 }

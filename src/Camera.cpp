@@ -13,19 +13,18 @@ namespace fastcraft {
         glm::vec3 target(0.0f, 0.0f, 0.0f);
         _front = glm::normalize(_position - target);
 
-//        initShader();
+        shader = new Shader("../resources/shader/main.vert", "../resources/shader/main.frag");
     }
 
     void Camera::initShader() {
-        Shader mainShader("../resources/shader/main.vert", "../resources/shader/main.frag");
-        mainShader.use();
+
 //        Get a handle for our "mvp" uniform
-        _matrix_id = glGetUniformLocation(mainShader.getProgramId(), "position");
+        // _matrix_id = shader->getUniform("mvp");
     }
 
     void Camera::loadShaderMatrix() {
         // Send our transformation to GPU
-        glUniformMatrix4fv(_matrix_id, 1, GL_FALSE, &_mvp[0][0]);
+//        glUniformMatrix4fv(_matrix_id, 1, GL_FALSE, &_mvp[0][0]);
     }
 
     void Camera::setFov(float fov) {
@@ -44,11 +43,15 @@ namespace fastcraft {
     }
 
     void Camera::render() {
+        shader->enable();
+
         // Setup a perspective projection
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
         GLfloat ratio = static_cast<float>(_settings.width) / _settings.height;
         glFrustum(-ratio, ratio, -1.f, 1.f, 1.f, _draw_distance); // 1500.f
+
+        shader->enable();
 
         // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> N units
         _projection_matrix = glm::perspective(glm::radians(_fov),
@@ -64,17 +67,21 @@ namespace fastcraft {
         // Compute the MVP matrix from keyboard and mouse input
         _mvp = _projection_matrix * _view_matrix * _model_matrix;
 
+        shader->setUniformMatrix("mvp", _mvp);
+
 //        std::cout << "Direction: " << _direction.x << _direction.y << std::endl;
 //        std::cout << "Right: "  << _right.x << _right.y << std::endl;
 
         // Send our transformation to GPU
-        glLoadMatrixf(glm::value_ptr(_mvp));
+//        glLoadMatrixf(glm::value_ptr(_mvp));
 //        loadShaderMatrix();
 
         /* Make sure we're chaning the model view and not the projection */
-        glMatrixMode(GL_MODELVIEW);
+//        glMatrixMode(GL_MODELVIEW);
         /* Reset The View */
-        glLoadIdentity();
+//        glLoadIdentity();
+
+        shader->disable();
     }
 
     void Camera::handleInput(float deltaTime) {
@@ -163,6 +170,10 @@ namespace fastcraft {
 
     void Camera::setFly(bool fly) {
         _fly = fly;
+    }
+
+    glm::mat4 Camera::getMVPMatrix() {
+        return _mvp;
     }
 
 }

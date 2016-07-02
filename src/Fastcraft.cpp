@@ -40,7 +40,7 @@ namespace fastcraft {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
         // SDL_GL_CONTEXT_CORE gives us only the newer version, deprecated functions are disabled
-//        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+//        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
         // Turn on double buffering with a 24bit Z buffer.
@@ -51,8 +51,6 @@ namespace fastcraft {
         SDL_GL_SetSwapInterval(1);
 
         // Init GLEW
-        // Apparently, this is needed for Apple. Thanks to Ross Vander for letting me know
-#ifdef __APPLE__
         glewExperimental = GL_TRUE;
         GLenum err = glewInit();
         if (GLEW_OK != err) {
@@ -62,7 +60,8 @@ namespace fastcraft {
             std::cout << "Failed to support API 2.1" << std::endl;
             return false;
         }
-#endif
+
+        std::cout << "OpenGL " << glGetString(GL_VERSION) << std::endl;
 
         unsigned int renderMods = 0;
         if (settings.vsync) {
@@ -76,7 +75,6 @@ namespace fastcraft {
 
         // Set size of renderer to the same as window
         SDL_RenderSetLogicalSize(renderer, settings.width, settings.height);
-
         // Make our background black
         glClearColor(0.5, 0.5, 0.5, 1.0);
         // Set color of renderer to red
@@ -124,19 +122,31 @@ namespace fastcraft {
 
         time_prev = high_resolution_clock::now();
 
-//        _skybox = new Skybox();
+        _skybox = new Skybox();
+
         _player = new Player(settings);
         _player->setPosition(0, 0, 5);
 
-        _block = new Block();
-        _block->setTexture("../resources/texture.jpg");
-        _block->setSize(1);
-        _block->setPosition(0, 0, -100);
+//        _block = new Block();
+//        _block->setTexture("../resources/texture.jpg");
+//        _block->setSize(1);
+//        _block->setPosition(0, 0, -100);
+
+        glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
+        glClearDepth(1.0f);
+        glClear(GL_DEPTH_BUFFER_BIT);
 
         while (isRunning) {
             double deltaTime = _timer->getDeltaTime();
             update(deltaTime);
             render();
+
+            GLenum error;
+            while ((error = glGetError()) != GL_NO_ERROR) {
+                std::cerr << error << std::endl;
+            }
 
             if (_fps->limit()) {
                 char display_text[128];
@@ -150,6 +160,8 @@ namespace fastcraft {
                         fps->getFps(), settings.max_fps, fps->getFrameMin(), fps->getFrameMax(), fps->getFrameAverage());
                         */
             }
+
+            // SDL_GL_SwapWindow(window);
         }
 
         SDL_DestroyWindow(window);
@@ -158,13 +170,13 @@ namespace fastcraft {
     }
 
     void Fastcraft::render() {
-        // Clear the window and make it all red
+        // Clear the window
         SDL_RenderClear(renderer);
-        // glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+        glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
         _player->render();
-//        _skybox->render();
-        _block->render();
+//        _block->render();
+        _skybox->render(_player->getMVPMatrix());
 
         // SDL_GL_SwapWindow(window);
 

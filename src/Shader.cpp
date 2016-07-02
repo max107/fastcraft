@@ -8,33 +8,9 @@ namespace fastcraft {
 
     Shader::Shader(const GLchar *vertexPath, const GLchar *fragmentPath) {
         // 1. Retrieve the vertex/fragment source code from filePath
-        std::string vertexCode;
-        std::string fragmentCode;
 
-        std::ifstream vShaderFile;
-        std::ifstream fShaderFile;
-        // ensures ifstream objects can throw exceptions:
-        vShaderFile.exceptions(std::ifstream::badbit);
-        fShaderFile.exceptions(std::ifstream::badbit);
-        try {
-            // Open files
-            vShaderFile.open(vertexPath);
-            fShaderFile.open(fragmentPath);
-            std::stringstream vShaderStream, fShaderStream;
-            // Read file's buffer contents into streams
-            vShaderStream << vShaderFile.rdbuf();
-            fShaderStream << fShaderFile.rdbuf();
-            // close file handlers
-            vShaderFile.close();
-            fShaderFile.close();
-            // Convert stream into string
-            vertexCode = vShaderStream.str();
-            fragmentCode = fShaderStream.str();
-        }
-        catch (std::ifstream::failure e) {
-            std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
-        }
-
+        std::string vertexCode = File::open(vertexPath);
+        std::string fragmentCode = File::open(fragmentPath);
         const GLchar *vShaderCode = vertexCode.c_str();
         const GLchar *fShaderCode = fragmentCode.c_str();
 
@@ -79,12 +55,46 @@ namespace fastcraft {
         glDeleteShader(fragment);
     }
 
-    void Shader::use() {
+    GLuint Shader::getProgramId() {
+        return _program;
+    }
+
+    GLint Shader::getUniform(const GLchar *name) {
+        GLint result = glGetUniformLocation(_program, name);
+        if (result == -1) std::cerr << "Could not find location for '" << name << "'" << std::endl;
+        return result;
+    }
+
+    void Shader::setUniformMatrix(const char *name, glm::mat4 matrix) {
+        glUniformMatrix4fv(getUniform(name), 1, GL_FALSE, glm::value_ptr(matrix));
+    }
+
+    void Shader::setUniformInt(const char *name, GLuint data) {
+        glUniform1i(getUniform(name), data);
+    }
+
+    void Shader::setUniformFloat1(const char *name, float data) {
+        glUniform1f(getUniform(name), data);
+    }
+
+    void Shader::setUniformFloat2(const char *name, glm::vec2 data) {
+        glUniform2f(getUniform(name), data.x, data.y);
+    }
+
+    void Shader::setUniformFloat3(const char *name, glm::vec3 data) {
+        glUniform3f(getUniform(name), data.x, data.y, data.z);
+    }
+
+    void Shader::setUniformFloat4(const char *name, glm::vec4 data) {
+        glUniform4f(getUniform(name), data.x, data.y, data.z, data.w);
+    }
+
+    void Shader::enable() {
         glUseProgram(_program);
     }
 
-    GLuint Shader::getProgramId() {
-        return _program;
+    void Shader::disable() {
+        glUseProgram(0);
     }
 
 }
