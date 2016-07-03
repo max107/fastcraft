@@ -7,6 +7,7 @@
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
+#include "Settings.h"
 
 namespace fastcraft {
 
@@ -24,7 +25,12 @@ namespace fastcraft {
 
         virtual glm::vec3 getPosition();
 
+        virtual void setSettings(Settings settings);
+
+        virtual Settings getSettings();
+
     private:
+        Settings _settings;
         glm::vec3 _position;
     };
 

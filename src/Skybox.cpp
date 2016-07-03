@@ -7,8 +7,7 @@
 namespace fastcraft {
 
     Skybox::Skybox() {
-        shader = new Shader("../resources/shader/skybox.vert", "../resources/shader/skybox.frag");
-        setup();
+
     }
 
     GLuint Skybox::loadTextures(std::vector<const GLchar *> faces) {
@@ -42,6 +41,8 @@ namespace fastcraft {
     }
 
     void Skybox::setup() {
+        shader = new Shader("../resources/shader/skybox.vert", "../resources/shader/skybox.frag");
+
         std::vector<const GLchar *> faces;
         faces.push_back("../resources/skybox/xpos.png");
         faces.push_back("../resources/skybox/xneg.png");
@@ -50,55 +51,6 @@ namespace fastcraft {
         faces.push_back("../resources/skybox/zpos.png");
         faces.push_back("../resources/skybox/zneg.png");
         texture = loadTextures(faces);
-
-        float _size = 50.f;
-        // Define a 3D cube (6 faces made of 2 triangles composed by 3 vertices)
-
-//        static const GLfloat cube[] =
-//                {
-//                        // positions    // texture coordinates
-//                        -_size, -_size, -_size, 0, 0,
-//                        -_size, _size, -_size, 1, 0,
-//                        -_size, -_size, _size, 0, 1,
-//                        -_size, -_size, _size, 0, 1,
-//                        -_size, _size, -_size, 1, 0,
-//                        -_size, _size, _size, 1, 1,
-//
-//                        _size, -_size, -_size, 0, 0,
-//                        _size, _size, -_size, 1, 0,
-//                        _size, -_size, _size, 0, 1,
-//                        _size, -_size, _size, 0, 1,
-//                        _size, _size, -_size, 1, 0,
-//                        _size, _size, _size, 1, 1,
-//
-//                        -_size, -_size, -_size, 0, 0,
-//                        _size, -_size, -_size, 1, 0,
-//                        -_size, -_size, _size, 0, 1,
-//                        -_size, -_size, _size, 0, 1,
-//                        _size, -_size, -_size, 1, 0,
-//                        _size, -_size, _size, 1, 1,
-//
-//                        -_size, _size, -_size, 0, 0,
-//                        _size, _size, -_size, 1, 0,
-//                        -_size, _size, _size, 0, 1,
-//                        -_size, _size, _size, 0, 1,
-//                        _size, _size, -_size, 1, 0,
-//                        _size, _size, _size, 1, 1,
-//
-//                        -_size, -_size, -_size, 0, 0,
-//                        _size, -_size, -_size, 1, 0,
-//                        -_size, _size, -_size, 0, 1,
-//                        -_size, _size, -_size, 0, 1,
-//                        _size, -_size, -_size, 1, 0,
-//                        _size, _size, -_size, 1, 1,
-//
-//                        -_size, -_size, _size, 0, 0,
-//                        _size, -_size, _size, 1, 0,
-//                        -_size, _size, _size, 0, 1,
-//                        -_size, _size, _size, 0, 1,
-//                        _size, -_size, _size, 1, 0,
-//                        _size, _size, _size, 1, 1
-//                };
 
         static const GLfloat cube[] =
                 {
@@ -146,27 +98,6 @@ namespace fastcraft {
                         _size, _size, _size
                 };
 
-//        GLfloat vertices[8 * 3] = {
-//                -_size, -_size, _size,
-//                _size, -_size, _size,
-//                _size, _size, _size,
-//                -_size, _size, _size,
-//                -_size, -_size, -_size,
-//                _size, -_size, -_size,
-//                _size, _size, -_size,
-//                -_size, _size, -_size
-//        };
-//
-//        GLuint indices[6 * 6] = {
-//                0, 1, 2, 2, 3, 0,
-//                3, 2, 6, 6, 7, 3,
-//                7, 6, 5, 5, 4, 7,
-//                4, 0, 3, 3, 7, 4,
-//                0, 1, 5, 5, 4, 0,
-//                1, 5, 6, 6, 2, 1
-//        };
-//        vao = new VertexArray(vertices, indices, nullptr, nullptr, 8 * 3, 6 * 6);
-
         glGenVertexArrays(1, &skyboxVAO);
         glGenBuffers(1, &skyboxVBO);
         glBindVertexArray(skyboxVAO);
@@ -177,33 +108,46 @@ namespace fastcraft {
         glBindVertexArray(0);
     }
 
-    void Skybox::render(glm::mat4 mvp) {
-//        GLint OldCullFaceMode;
-//        glGetIntegerv(GL_CULL_FACE_MODE, &OldCullFaceMode);
-//        GLint OldDepthFuncMode;
-//        glGetIntegerv(GL_DEPTH_FUNC, &OldDepthFuncMode);
-//        glCullFace(GL_FRONT);
-//        glDepthFunc(GL_LEQUAL);
-//        glDepthMask (GL_FALSE);
+    void Skybox::setSkyboxRotation(glm::vec3 front, glm::vec3 up) {
+        _front = front;
+        _up = up;
+    }
 
-        shader->enable();
+    glm::mat4 Skybox::getMVPMatrix() {
+        // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> N units
+        glm::mat4 _projection_matrix = glm::perspective(glm::radians(getSettings().fov),
+                                                        static_cast<float>(getSettings().width) /
+                                                        static_cast<float>(getSettings().height),
+                                                        0.1f, getSettings().draw_distance);
+        glm::vec3 position = getPosition();
+        glm::mat4 _view_matrix = glm::lookAt(position, position + _front, _up);
+        // Compute the MVP matrix from keyboard and mouse input
+        return _projection_matrix * _view_matrix * glm::mat4(1.f);
+    }
+
+    void Skybox::render() {
+        GLint OldCullFaceMode, OldDepthFuncMode;
+        glGetIntegerv(GL_CULL_FACE_MODE, &OldCullFaceMode);
+        glGetIntegerv(GL_DEPTH_FUNC, &OldDepthFuncMode);
+        glCullFace(GL_FRONT);
+        glDepthFunc(GL_LEQUAL);
+        glDepthMask(GL_FALSE);
 
         // skybox cube
+        shader->enable();
         glBindVertexArray(skyboxVAO);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
-        glUniform1i(glGetUniformLocation(shader->getProgramId(), "skybox"), 0);
+        shader->setUniformInt("skybox", 0);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
-
-//        glDepthMask(GL_TRUE);
-
-        shader->setUniformMatrix("mvp", mvp);
+        glDepthMask(GL_TRUE);
+        shader->setUniformMatrix("mvp", getMVPMatrix());
         shader->disable();
 
-//        glCullFace(OldCullFaceMode);
-//        glDepthFunc(OldDepthFuncMode);
+        glCullFace(OldCullFaceMode);
+        glDepthFunc(OldDepthFuncMode);
     }
 
 }

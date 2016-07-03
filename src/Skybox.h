@@ -24,21 +24,23 @@ namespace fastcraft {
     public:
         Skybox();
 
-        void render(glm::mat4 mvp);
+        void render();
 
-    protected:
+        void setSkyboxRotation(glm::vec3 front, glm::vec3 up);
+
         void setup();
 
     private:
+        glm::mat4 getMVPMatrix();
+        glm::vec3 _front;
+        glm::vec3 _up;
+        float _size = 1.f;
         VertexArray *vao;
-
         GLuint skyboxVAO, skyboxVBO;
-
         GLuint texture = 0;
-
         Shader *shader;
 
-        GLuint loadTextures(std::vector<const GLchar*> faces);
+        GLuint loadTextures(std::vector<const GLchar *> faces);
     };
 
 }

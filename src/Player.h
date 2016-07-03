@@ -15,7 +15,7 @@ namespace fastcraft {
     class Player : public Camera {
 
     public:
-        Player(Settings settings) : Camera(settings) { }
+        Player() : Camera() { }
     };
 
 }

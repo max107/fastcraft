@@ -16,12 +16,10 @@ namespace fastcraft {
 
     void Object::setPosition(int x, int y, int z) {
         _position = glm::vec3(x, y, z);
-        updatePosition();
     }
 
     void Object::setPosition(glm::vec3 position) {
         _position = position;
-        updatePosition();
     }
 
     void Object::updatePosition() {
@@ -32,6 +30,14 @@ namespace fastcraft {
 
     glm::vec3 Object::getPosition() {
         return _position;
+    }
+
+    void Object::setSettings(Settings settings) {
+        _settings = settings;
+    }
+
+    Settings Object::getSettings() {
+        return _settings;
     }
 
 }

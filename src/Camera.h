@@ -22,29 +22,13 @@ namespace fastcraft {
 
     class Camera : public Object {
     public:
-        Camera(Settings settings);
-
-        void setPosition(int x, int y, int z);
-
-        void setPosition(glm::vec3 position);
-
-        void setDrawDistance(float zfar);
-
-        void setFov(float fov);
+        Camera();
 
         GLfloat getSensitivity();
 
+        void setup();
+
         void render();
-
-        void setDirection(glm::vec3 direction);
-
-        void setRight(glm::vec3 right);
-
-        Settings getSettings();
-
-        void initShader();
-
-        void loadShaderMatrix();
 
         void handleMouseMove(int xrel, int yrel);
 
@@ -52,39 +36,25 @@ namespace fastcraft {
 
         void update(float deltaTime);
 
-        void setFly(bool fly);
+        glm::vec3 getFront();
 
-        glm::mat4 getMVPMatrix();
+        glm::vec3 getUp();
 
     private:
         float yaw = 0.f;
         float pitch = 0.f;
-
         Shader *shader;
-
         glm::mat4 _projection_matrix;
         // камера находится в точке (0,0,5)
         // она смотрит на точку (0,0,0)
         // вектор, идущий из центра камеры к ее верху, равен (0, 1, 0)
         // то есть, камера расположена горизонтально
-        glm::mat4 _view_matrix = glm::lookAt(glm::vec3(0, 0, 5),
-                                             glm::vec3(0, 0, 0),
-                                             glm::vec3(0, 1, 0));
+        glm::mat4 _view_matrix = glm::lookAt(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
         glm::mat4 _model_matrix = glm::mat4(1.f);
         glm::mat4 _mvp;
-
-        GLint _matrix_id;
-
-        Settings _settings;
-        glm::vec3 _position;
-
-        float _fov = 45.0f;
-        float _draw_distance = 500.f;
-
         glm::vec3 _front;
         glm::vec3 _right;
         glm::vec3 _up;
-
         bool _fly = true;
     };
 

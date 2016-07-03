@@ -15,6 +15,13 @@ namespace fastcraft {
         bool vsync = false;
         unsigned int limit_fps = 60;
         unsigned int mouse_sensitivity = 6;
+
+        bool wireframe = false;
+        // fov is a zoom
+        // fov - 5 * glfwGetMouseWheel();
+        // Now GLFW 3 requires setting up a callback for this. It's a bit too complicated for this beginner's tutorial, so it's disabled instead.
+        float fov = 45.f;
+        float draw_distance = 1500.f;
     };
 
 }

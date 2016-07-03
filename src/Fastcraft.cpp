@@ -123,9 +123,11 @@ namespace fastcraft {
         time_prev = high_resolution_clock::now();
 
         _skybox = new Skybox();
+        _skybox->setup();
 
-        _player = new Player(settings);
-        _player->setPosition(0, 0, 5);
+        _player = new Player();
+        _player->setSettings(settings);
+        _player->setup();
 
 //        _block = new Block();
 //        _block->setTexture("../resources/texture.jpg");
@@ -176,7 +178,15 @@ namespace fastcraft {
 
         _player->render();
 //        _block->render();
-        _skybox->render(_player->getMVPMatrix());
+//        _skybox->setPosition(_player->getPosition());
+        _skybox->setPosition(_player->getPosition());
+        _skybox->setSkyboxRotation(_player->getFront(), _player->getUp());
+        _skybox->render();
+
+        printf("Player: %f %f %f. Skybox: %f %f %f\n",
+               _player->getPosition().x, _player->getPosition().y, _player->getPosition().z,
+               _skybox->getPosition().x, _skybox->getPosition().y, _skybox->getPosition().z
+        );
 
         // SDL_GL_SwapWindow(window);
 
