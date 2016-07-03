@@ -119,8 +119,7 @@ namespace fastcraft {
                                                         static_cast<float>(getSettings().width) /
                                                         static_cast<float>(getSettings().height),
                                                         0.1f, getSettings().draw_distance);
-        glm::vec3 position = getPosition();
-        glm::mat4 _view_matrix = glm::lookAt(position, position, _up);
+        glm::mat4 _view_matrix = glm::lookAt(glm::vec3(0.0, 0.0, 0.0), _front, _up);
         // Compute the MVP matrix from keyboard and mouse input
         return _projection_matrix * _view_matrix * glm::mat4(1.f);
     }
